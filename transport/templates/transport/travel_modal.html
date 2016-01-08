@@ -1,0 +1,70 @@
+{% load staticfiles %}
+
+<!-- Modal -->
+<div id="travelModal{{ travel.id }}" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+	<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Modificar Viaje {{ travel }}</h4>
+			</div>
+			<div class="modal-body">
+				<form id="travelForm{{ travel.id }}" action="{% url 'transport:travel_save' travel.id %}" method="post">
+				{% csrf_token %}
+					<div class="form group">
+						<label for="selectGroup">Grupo</label>
+						<select class="form-control" id="selectGroup" name="group">
+							{% for group in groups %}
+							<option value={{ group.pk }} {% if travel.group == group %}selected{% endif %}>{{ group }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="form group">
+						<label for="selectBus">Bus</label>
+						<select class="form-control" id="selectBus" name="bus">
+							<option value=0 {% if not travel.bus %}selected{% endif %}>-----</option>
+							{% for bus in busses %}
+							<option value={{ bus.pk }} {% if travel.bus == bus %}selected{% endif %}>{{ bus }} ({{bus.company}})</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="form group">
+						<label for="selectDriver">Conductor</label>
+						<select class="form-control" id="selectDriver" name="driver">
+							<option value=0 {% if not travel.driver %}selected{% endif %}>-----</option>
+							{% for driver in drivers %}
+							<option value={{ driver.pk }} {% if travel.driver == driver %}selected{% endif %}>{{ driver }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="form group">
+						<label for="selectItinerary">Itinerario</label>
+						<select class="form-control" id="selectItinerary" name="itinerary">
+							{% for itinerary in itineraries %}
+							<option value={{ itinerary.pk }} {% if travel.itinerary == itinerary %}selected{% endif %}>{{ itinerary }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="form group">
+						<label for="datetimePicker{{ travel.id }}">Fecha/Hora</label>
+						<div class='input-group date' id='datetimePicker{{ travel.id }}'>
+							<input type='text' class="form-control" name="datetime" value="{{ travel.date|date:"d/m/Y" }} {{travel.time}}"/>
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</span>
+						</div>
+					</div>
+					<div class="form group">
+						<label for="areaNotes">Notas</label>
+						<textarea class="form-control" id="areaNotes" name="notes">{{ travel.notes }}</textarea>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="submit" class="btn btn-primary" value="submit" id="travelForm{{travel.id}}Submit"><i class="glyphicon glyphicon-save"></i> Guardar</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> Cancelar</button>
+			</div>
+		</div>
+	</div>
+</div>
