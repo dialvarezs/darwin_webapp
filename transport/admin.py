@@ -3,9 +3,13 @@ from django.contrib import admin
 from django import forms
 from django_admin_bootstrapped.admin.models import SortableInline
 
-from .models import Bus, Driver, Destination, Stretch, StretchDestinations, Itinerary, Company, Group, Travel, IDType, Passenger
+from .models import Bus, BusCompany, Driver, Destination, Stretch, StretchDestinations, Itinerary, Company, Group, Travel, IDType, Passenger
 from . import validators
 from . import utils
+
+class BusCompanyAdmin(admin.ModelAdmin):
+	def get_model_perms(self, request):
+		return {}
 
 class MyBusAdminForm(forms.ModelForm):
 	def clean_plate(self):
@@ -26,7 +30,7 @@ class BusAdmin(admin.ModelAdmin):
 		if db_field.name == 'notes':
 			formfield.widget = forms.Textarea(attrs={'rows': 5})
 		return formfield
-	list_display = ('__str__', 'plate', 'model', 'capacity', 'is_available', 'company')
+	list_display = ('__str__', 'company', 'plate', 'model', 'capacity', 'is_available')
 
 class MyDriverAdminForm(forms.ModelForm):
 	def clean_id_string(self):
@@ -99,6 +103,7 @@ class IDTypeAdmin(admin.ModelAdmin):
 		return {}
 
 
+admin.site.register(BusCompany, BusCompanyAdmin)
 admin.site.register(Bus, BusAdmin)
 admin.site.register(Driver, DriverAdmin)
 admin.site.register(Destination, DestinationAdmin)

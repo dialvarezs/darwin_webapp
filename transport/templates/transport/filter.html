@@ -1,74 +1,29 @@
 {% extends "transport/index.html" %}
 
-{% block search_nav %}
-	<nav class="navbar navbar-default">
-		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#filter-navbar-collapse">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<span class="navbar-brand">Filtrar</span>
-			</div>
-			<div id="filter-navbar-collapse" class="navbar-collapse collapse">
-				<form class="form-inline" action="{% url 'transport:filter' %}" method="GET" role="search">
-					<div class="form-inline">
-						<div class="form-group">
-							<div class="input-group">
-								<div class="input-group-addon"><strong>G</strong></div>
-								<select class="form-control" id="selectGroup" name="group">
-									<option value=0>TODOS</option>
-								{% for group in groups %}
-									<option value={{ group.pk }} {% if request.GET.group|add:0 == group.pk %}selected{% endif %}>{{ group }}</option>
-								{% endfor %}
-								</select>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="input-group">
-								<div class="input-group-addon"><strong>C</strong></div>
-								<select class="form-control" id="selectDriver" name="driver">
-									<option value=0>TODOS</option>
-								{% for driver in drivers %}
-									<option value={{ driver.pk }} {% if request.GET.driver|add:0 == driver.pk %}selected{% endif %}>{{ driver }}</option>
-								{% endfor %}
-								</select>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="input-group">
-								<div class="input-group-addon"><span class="glyphicon glyphicon-calendar"/></div>
-								<input type="date" class="form-control" id="inputDateFrom" name="date_from" value="{{request.GET.date_from}}">
-								<div class="input-group-addon">-</div>
-								<input type="date" class="form-control" id="inputDateTo" name="date_to" value="{{request.GET.date_to}}">
-							</div>
-						</div>
+{%block search_nav_extra%}
+<div class="row" style="margin-bottom:10px">
+	<div class="col-md-12 text-right">
+		<a href="{% url 'transport:index' %}" class="btn btn-danger" role="button">
+			Anular Filtro
+		</a>
+	</div>
+</div>
+{% endblock %}
 
-						<button type="submit" class="btn btn-default navbar-btn">
-							Filtrar
-						</button>
-						<a href="{% url 'transport:index' %}">
-							<button type="button" class="btn btn-danger">Anular Filtro</button>
-						</a>
-					</div>
-				</form>
-			</div>
+{%block nav_extra%}
+{% if request.GET.group|add:0 > 0 %}
+<nav class="navbar navbar-default">
+	<div class="container">
+		<div class="navbar-header">
+			<span class="navbar-brand">Grupo {{current_group}}</span>
 		</div>
-	</nav>
-	{% if request.GET.group|add:0 > 0 %}
-	<nav class="navbar navbar-default">
-		<div class="container">
-			<div class="navbar-header">
-				<span class="navbar-brand">Grupo {{current_group}}</span>
-			</div>
-			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#" type="button" data-toggle="modal" data-target="#groupModal" role="button"><span class="glyphicon glyphicon-info-sign"></span> <b>Detalles</b></a></li>
-			</ul>
-		</div>
-		{% include "transport/group_modal.html" %}
-	</nav>
-	{% endif %}
+		<ul class="nav navbar-nav navbar-right">
+			<li><a href="#" type="button" data-toggle="modal" data-target="#groupModal" role="button"><span class="glyphicon glyphicon-info-sign"></span> <strong>Detalles</strong></a></li>
+		</ul>
+	</div>
+	{% include "transport/group_modal.html" %}
+</nav>
+{% endif %}
 {% endblock %}
 
 {% block aditional_scripts %}

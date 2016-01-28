@@ -5,8 +5,20 @@ SEX_CHOICE = (
 	('f', 'femenino'),
 )
 
+class BusCompany(models.Model):
+	name = models.CharField(max_length=32, verbose_name='nombre')
+
+	def __str__(self):
+		return self.name
+
+	class Meta:
+		verbose_name = 'empresa de buses'
+		verbose_name_plural = 'empresas de buses'
+		ordering = ['name']
+
+
 class Bus(models.Model):
-	company = models.CharField(max_length=32, verbose_name='empresa')
+	company = models.ForeignKey(BusCompany, verbose_name='empresa')
 	plate = models.CharField(max_length=6, blank=True, verbose_name='patente')
 	brand = models.CharField(max_length=32, verbose_name='marca')
 	model = models.CharField(max_length=32, verbose_name='modelo')
@@ -21,6 +33,7 @@ class Bus(models.Model):
 	class Meta:
 		verbose_name = 'bus'
 		verbose_name_plural = 'buses'
+		ordering = ['company', 'plate']
 
 
 class Driver(models.Model):
@@ -37,6 +50,7 @@ class Driver(models.Model):
 	class Meta:
 		verbose_name = 'conductor'
 		verbose_name_plural = 'conductores'
+		ordering = ['surnames', 'names']
 
 
 class Destination(models.Model):
@@ -50,6 +64,7 @@ class Destination(models.Model):
 	class Meta:
 		verbose_name = 'destino'
 		verbose_name_plural = 'destinos'
+		ordering = ['name']
 
 
 class Stretch(models.Model):
@@ -65,6 +80,7 @@ class Stretch(models.Model):
 	class Meta:
 		verbose_name = 'tramo'
 		verbose_name_plural = 'tramos'
+		ordering = ['description']
 
 
 class StretchDestinations(models.Model):
@@ -80,6 +96,7 @@ class StretchDestinations(models.Model):
 		verbose_name_plural = 'destinos'
 		ordering = ['position']
 
+
 class Itinerary(models.Model):
 	stretch = models.ForeignKey(Stretch, verbose_name='tramo')
 	app_people = models.IntegerField(verbose_name='PAX')
@@ -91,6 +108,7 @@ class Itinerary(models.Model):
 	class Meta:
 		verbose_name = 'itinerario'
 		verbose_name_plural = 'itinerarios'
+		ordering = ['stretch', 'app_people', 'guides']
 
 
 class Company(models.Model):
@@ -107,6 +125,7 @@ class Company(models.Model):
 	class Meta:
 		verbose_name = 'empresa'
 		verbose_name_plural = 'empresas'
+		ordering = ['name']
 
 
 class IDType(models.Model):
@@ -118,6 +137,7 @@ class IDType(models.Model):
 	class Meta:
 		verbose_name = 'tipo de identificación'
 		verbose_name_plural = 'tipos de identificación'
+		ordering = ['name']
 
 
 class Passenger(models.Model):
@@ -134,6 +154,7 @@ class Passenger(models.Model):
 	class Meta:
 		verbose_name = 'pasajero'
 		verbose_name_plural = 'pasajeros'
+		ordering = ['id_type', 'id_string']
 
 
 class Group(models.Model):
@@ -150,6 +171,7 @@ class Group(models.Model):
 	class Meta:
 		verbose_name = 'grupo'
 		verbose_name_plural = 'grupos'
+		ordering = ['external_id']
 
 
 class Travel(models.Model):
@@ -167,3 +189,4 @@ class Travel(models.Model):
 	class Meta:
 		verbose_name = 'viaje'
 		verbose_name_plural = 'viajes'
+		ordering = ['date', 'time']

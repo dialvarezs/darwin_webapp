@@ -1,4 +1,4 @@
-{% extends "tpl/base.html" %}
+{% extends "base/base.html" %}
 
 {% block titles %} Darwin Transportes {% endblock %}
 
@@ -15,50 +15,66 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-						<span class="navbar-brand">Filtrar</span>
+						<span class="navbar-brand">Filtro</span>
 					</div>
-					<div id="filter-navbar-collapse" class="navbar-collapse collapse">
+					<div id="filter-navbar-collapse" class="navbar-collapse collapse" style="padding-top:10px">
 						<form class="form-inline" action="{% url 'transport:filter'%}" method="GET" role="search">
 							<div class="form-inline">
-								<div class="form-group">
+								<div class="form-group col-md-2" style="padding-left:0px; padding-right:5px">
 									<div class="input-group">
-										<div class="input-group-addon"><strong>G</strong></div>
+										<div class="input-group-addon"><span class="glyphicon">Grupo</span></div>
 										<select class="form-control" id="selectGroup" name="group">
 											<option value=0>TODOS</option>
 										{% for group in groups %}
-											<option value={{ group.pk }}>{{ group }}</option>
+											<option value={{ group.pk }} {% if request.GET.group|add:0 == group.pk %}selected{% endif %}>{{ group }}</option>
 										{% endfor %}
 										</select>
 									</div>
 								</div>
-								<div class="form-group">
+								<div class="form-group col-md-2" style="padding-left:0px; padding-right:5px">
 									<div class="input-group">
-										<div class="input-group-addon"><strong>C</strong></div>
+										<div class="input-group-addon"><span class="glyphicon">Empresa</span></div>
+										<select class="form-control" id="selectBusCompany" name="buscompany">
+											<option value=0>TODAS</option>
+										{% for buscompany in buscompanies %}
+											<option value={{ buscompany.pk }} {% if request.GET.buscompany|add:0 == buscompany.pk %}selected{% endif %}>{{ buscompany }}</option>
+										{% endfor %}
+										</select>
+									</div>
+								</div>
+								<div class="form-group col-md-2" style="padding-left:0px; padding-right:5px">
+									<div class="input-group">
+										<div class="input-group-addon"><span class="glyphicon">Chofer</span></div>
 										<select class="form-control" id="selectDriver" name="driver">
 											<option value=0>TODOS</option>
 										{% for driver in drivers %}
-											<option value={{ driver.pk }}>{{ driver }}</option>
+											<option value={{ driver.pk }} {% if request.GET.driver|add:0 == driver.pk %}selected{% endif %}>{{ driver }}</option>
 										{% endfor %}
 										</select>
 									</div>
 								</div>
-								<div class="form-group">
+								<div class="form-group col-md-4" style="padding-left:0px; padding-right:5px">
 									<div class="input-group">
 										<div class="input-group-addon"><span class="glyphicon glyphicon-calendar"/></div>
-										<input type="date" class="form-control" id="inputDateFrom" name="date_from">
-										<div class="input-group-addon">-</div>
-										<input type="date" class="form-control" id="inputDateTo" name="date_to">
+										<input type="date" class="form-control" id="inputDateFrom" name="date_from" value={%if request.GET.date_from%}"{{request.GET.date_from}}"{%else%}"{% now 'Y-m-d'%}"{%endif%}>
+										<div class="input-group-addon"><span class="glyphicon">-</span></div>
+										<input type="date" class="form-control" id="inputDateTo" name="date_to" value={{request.GET.date_to}}>
 									</div>
 								</div>
-
-								<button type="submit" class="btn btn-default navbar-btn">
-									Filtrar
-								</button>
+								<div class="col-md-1 text-right">
+									<button type="submit" class="btn btn-default navbar-btn" style="margin:0px; margin-left:82px">
+										Filtrar
+									</button>
+								</div>
 							</div>
 						</form>
 					</div>
+					{% block search_nav_extra %}
+					{% endblock %}
 				</div>
 			</nav>
+			{% block nav_extra %}
+			{% endblock %}
 			{% endblock %}
 		</div>
 		<div class="row">
@@ -79,7 +95,7 @@
 						<th>Viaje</th>
 						<th>Grupo</th>
 						<th>Bus</th>
-						<th>Conductor</th>
+						<th>Chofer</th>
 						<th>Empresa</th>
 						<th>Tramo</th>
 						<th>PAX</th>
@@ -89,12 +105,12 @@
 						<th></th>
 					</tr>
 					{% for travel in travels %}
-					<tr {% ifchanged travel.date %}style="border-top: thick double grey;"{% endifchanged %}>
+					<tr {% ifchanged travel.date %}style="border-top: double grey;"{% endifchanged %}>
 						<td>{{ travel.pk|stringformat:"04d" }}</td>
-						<td><a href="{% url 'transport:filter' %}?group={{travel.group.pk}}">{{ travel.group }}</a>{% if travel.group.debt|add:0 > 0 %} <span style="color:red; font-weight: bold;">(D)</span>{% endif %}</td>
+						<td><a href="{% url 'transport:filter' %}?group={{travel.group.pk}}&date_from={% now "Y-m-d" %}">{{ travel.group }}</a>{% if travel.group.debt|add:0 > 0 %} <span style="color:red; font-weight: bold;">(D)</span>{% endif %}</td>
 						<td>{% if travel.bus %}{{ travel.bus }}{% else %}-----{% endif %}</td>
-						<td>{% if travel.driver %}<a href="{% url 'transport:filter' %}?driver={{travel.driver.pk}}">{{ travel.driver }}</a>{% else %}-----{% endif %}</td>
-						<td>{% if travel.bus %}{{ travel.bus.company }}{% else %}-----{% endif %}</td>
+						<td>{% if travel.driver %}<a href="{% url 'transport:filter' %}?driver={{travel.driver.pk}}&date_from={% now "Y-m-d" %}">{{ travel.driver }}</a>{% else %}-----{% endif %}</td>
+						<td>{% if travel.bus %}<a href="{% url 'transport:filter' %}?buscompany={{travel.bus.company.pk}}&date_from={% now "Y-m-d" %}">{{ travel.bus.company }}</a>{% else %}-----{% endif %}</td>
 						<td>{{ travel.itinerary.stretch }}</td>
 						<td>{{ travel.itinerary.app_people }}+{{travel.itinerary.guides}}</td>
 						<td>{{ travel.date }}</td>
@@ -107,18 +123,18 @@
 				</table>
 			</div>
 			<ul class="pagination">
+				{% load filters_extra %}
 				<li {% if not travels.has_previous %}class="disabled"{%endif%}>
-					<a {%if travels.has_previous%}href="?page={{travels.previous_page_number}}"{%endif%}>
-						<span aria-hidden="true">&laquo;</span>
+					<a {%if travels.has_previous%}href="?{% url_replace 'page' travels.previous_page_number %}"{%endif%}>
+						<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
 					</a>
 				</li>
-				{% load filters_extra %}
-				{% for i in travels.paginator.num_pages|times %}
-				<li {%if travels.number == i %}class="active"{%endif%}><a href="?page={{i}}">{{i}}</a></li>
+				{% for i in travels.paginator.num_pages|pages:travels.number %}
+				<li {%if travels.number == i %}class="active"{%endif%}><a href="?{% url_replace 'page' i %}">{{i}}</a></li>
 				{% endfor %}
 				<li {% if not travels.has_next %}class="disabled"{%endif%}>
-					<a {%if travels.has_next%}href="?page={{travels.next_page_number}}"{%endif%}>
-						<span aria-hidden="true">&raquo;</span>
+					<a {%if travels.has_next%}href="?{% url_replace 'page' travels.next_page_number %}"{%endif%}>
+						<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
 					</a>
 				</li>
 			</ul>

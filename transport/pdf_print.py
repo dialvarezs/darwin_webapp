@@ -72,7 +72,7 @@ class DocumentBuilder():
 		for travel in travels:
 			row = (str(travel.pk).zfill(4), Paragraph(travel.group.__str__(), self._styles["BodyText"]))
 			if travel.bus:
-				row += (travel.bus.plate, Paragraph(travel.bus.company, self._styles["BodyText"]))
+				row += (travel.bus.plate, Paragraph(travel.bus.company.__str__(), self._styles["BodyText"]))
 			else:
 				row += ("-----", "-----")
 			if travel.driver:

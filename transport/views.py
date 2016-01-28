@@ -7,19 +7,19 @@ from django.contrib.auth.decorators import login_required
 from io import BytesIO
 from datetime import datetime
 
-from .models import Travel, Group, Bus, Driver, Itinerary, Company
+from .models import Travel, Group, Bus, BusCompany, Driver, Itinerary, Company
 from .pdf_print import DocumentBuilder
 
 @login_required
 def index(request):
-	travels_all = Travel.objects.exclude(date__lt=datetime.today()).order_by('date','time')
+	travels_all = Travel.objects.exclude(date__lt=datetime.today())
 	groups = Group.objects.all()
-	companies = Company.objects.all()
 	busses = Bus.objects.filter(is_available=True)
+	buscompanies = BusCompany.objects.all()
 	drivers = Driver.objects.all()
 	itineraries = Itinerary.objects.all()
 
-	paginator = Paginator(travels_all, 15)
+	paginator = Paginator(travels_all, 25)
 	page = request.GET.get('page')
 
 	try:
@@ -29,14 +29,15 @@ def index(request):
 	except EmptyPage:
 		travels = paginator.page(paginator.num_pages)    
 
-	context = {'nbar':'transport', 'logo':'img/logo-darwin.png', 'travels':travels, 'groups':groups, 'busses':busses, 'drivers':drivers, 'itineraries':itineraries}
+	context = {'nbar':'transport', 'logo':'img/logo-darwin-mini.png', 'travels':travels, 'groups':groups, 'busses':busses, 'buscompanies':buscompanies, 'drivers':drivers, 'itineraries':itineraries}
 	return render(request, 'transport/index.html', context)
 
 @login_required
 def filter(request):
-	travels_all = Travel.objects.exclude(date__lt=datetime.today()).order_by('date','time')
+	travels_all = Travel.objects.all()
 	groups = Group.objects.all()
-	busses = Bus.objects.all()
+	busses = Bus.objects.filter(is_available=True)
+	buscompanies = BusCompany.objects.all()
 	drivers = Driver.objects.all()
 	itineraries = Itinerary.objects.all()
 	companies = Company.objects.all()
@@ -47,6 +48,13 @@ def filter(request):
 		if group != '0':
 			travels_all = travels_all.filter(group=group)
 		current_group = Group.objects.get(pk=group)
+	except:
+		pass
+
+	try:
+		buscompany = request.GET['buscompany']
+		if buscompany != '0':
+			travels_all = travels_all.filter(bus__company=buscompany)
 	except:
 		pass
 
@@ -63,9 +71,12 @@ def filter(request):
 
 		travels_all = travels_all.filter(date__range=[date_from, date_to])
 	except:
-		pass
+		if date_from:
+			travels_all = travels_all.exclude(date__lt=date_from)
+		elif date_to:
+			travels_all = travels_all.exclude(date__gt=date_to)
 
-	paginator = Paginator(travels_all, 15)
+	paginator = Paginator(travels_all, 25)
 	page = request.GET.get('page')
 
 	try:
@@ -75,7 +86,7 @@ def filter(request):
 	except EmptyPage:
 		travels = paginator.page(paginator.num_pages)    
 
-	context = {'nbar':'transport', 'logo':'img/logo-darwin.png', 'travels':travels, 'groups':groups, 'busses':busses, 'drivers':drivers, 'itineraries':itineraries, 'companies':companies, 'current_group':current_group}
+	context = {'nbar':'transport', 'logo':'img/logo-darwin-mini.png', 'travels':travels, 'groups':groups, 'busses':busses, 'buscompanies':buscompanies, 'drivers':drivers, 'itineraries':itineraries, 'companies':companies, 'current_group':current_group}
 	return render(request, 'transport/filter.html', context)
 
 @login_required
@@ -137,7 +148,10 @@ def group_save(request, group_id):
 
 @login_required
 def travel_pdf(request):
-	travels = Travel.objects.exclude(date__lt=datetime.today()).order_by('date','time')
+	if 'date_from' in request.GET:
+		travels = Travel.objects.all()
+	else:
+		travels = Travel.objects.exclude(date__lt=datetime.today())
 	info_raw = ()
 	try:
 		group = request.GET['group']
@@ -148,6 +162,16 @@ def travel_pdf(request):
 			info_raw += ("Grupo: " + "TODOS",)
 	except:
 		info_raw += ("Grupo: " + "TODOS",)
+
+	try:
+		buscompany = request.GET['buscompany']
+		if buscompany != '0':
+			travels = travels.filter(bus__company=buscompany)
+			info_raw += ("Empresa:" + BusCompany.objects.all().get(pk=buscompany).__str__(),)
+		else:
+			info_raw += ("Empresa: " + "TODAS",)
+	except:
+		info_raw += ("Empresa: " + "TODAS",)
 
 	try:
 		driver = request.GET['driver']
@@ -165,8 +189,11 @@ def travel_pdf(request):
 
 		travels = travels.filter(date__range=[date_from, date_to])
 
-		info += ("Fechas: {} - {}".format(datetime.strptime(date_from , '%Y-%m-%d').strftime('%d/%d/%y'), datetime.strptime(date_to , '%Y-%m-%d').strftime('%d/%d/%y')),)
+		info_raw += ("Fechas: {} - {}".format(datetime.strptime(date_from , '%Y-%m-%d').strftime('%d/%d/%y'), datetime.strptime(date_to , '%Y-%m-%d').strftime('%d/%d/%y')),)
 	except:
+		if date_from:
+			travels_all = travels_all.exclude(date__lt=date_from)
+			info_raw += ("Fechas: {} - " + "TODAS",)
 		info_raw += ("Fechas: " + "TODAS",)
 
 
