@@ -55,10 +55,12 @@
 								</div>
 								<div class="form-group col-md-4" style="padding-left:0px; padding-right:5px">
 									<div class="input-group">
+										{% block dategroup %}
 										<div class="input-group-addon"><span class="glyphicon glyphicon-calendar"/></div>
-										<input type="date" class="form-control" id="inputDateFrom" name="date_from" value={%if request.GET.date_from%}"{{request.GET.date_from}}"{%else%}"{% now 'Y-m-d'%}"{%endif%}>
+										<input type="date" class="form-control" id="inputDateFrom" name="date_from" value={% now 'Y-m-d'%}>
 										<div class="input-group-addon"><span class="glyphicon">-</span></div>
-										<input type="date" class="form-control" id="inputDateTo" name="date_to" value={{request.GET.date_to}}>
+										<input type="date" class="form-control" id="inputDateTo" name="date_to">
+										{% endblock %}
 									</div>
 								</div>
 								<div class="col-md-1 text-right">
@@ -82,9 +84,11 @@
 				<a href="#" data-toggle="modal" data-target="#travelModal0">
 					<button class="btn btn-default"><span class="glyphicon glyphicon-plus"/> Nuevo</button>
 				</a>
-				<a target="_blank" href="{% url 'transport:travel_pdf' %}?{{request.GET.urlencode}}">
+				{% block btn_print %}
+				<a target="_blank" href="{% url 'transport:travel_pdf' %}?date_from={% now 'Y-m-d' %}">
 					<button class="btn btn-default"><span class="glyphicon glyphicon-print"/> Imprimir</button>
 				</a>
+				{% endblock %}
 			</p>
 			{% include "transport/travel_modal_new.html" %}
 		</div>

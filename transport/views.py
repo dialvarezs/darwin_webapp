@@ -43,38 +43,25 @@ def filter(request):
 	companies = Company.objects.all()
 	current_group = None
 
-	try:
-		group = request.GET['group']
-		if group != '0':
-			travels_all = travels_all.filter(group=group)
-		current_group = Group.objects.get(pk=group)
-	except:
-		pass
+	if 'group' in request.GET and request.GET['group'] != '0':
+		travels_all = travels_all.filter(group=request.GET['group'])
+		current_group = Group.objects.get(pk=request.GET['group'])
 
-	try:
-		buscompany = request.GET['buscompany']
-		if buscompany != '0':
-			travels_all = travels_all.filter(bus__company=buscompany)
-	except:
-		pass
+	if 'buscompany' in request.GET and request.GET['buscompany'] != '0':
+		travels_all = travels_all.filter(bus__company=request.GET['buscompany'])
 
-	try:
-		driver = request.GET['driver']
-		if driver != '0':
-			travels_all = travels_all.filter(driver=driver)
-	except:
-		pass
+	if 'driver' in request.GET and request.GET['driver'] != '0':
+		travels_all = travels_all.filter(driver=request.GET['driver'])
 
-	try:
-		date_from = request.GET['date_from']
-		date_to = request.GET['date_to']
-
+	date_from = (request.GET['date_from'] if 'date_from' in request.GET else None)
+	date_to = (request.GET['date_to'] if 'date_to' in request.GET else None)
+	if date_from and date_to:
 		travels_all = travels_all.filter(date__range=[date_from, date_to])
-	except:
-		if date_from:
-			travels_all = travels_all.exclude(date__lt=date_from)
-		elif date_to:
-			travels_all = travels_all.exclude(date__gt=date_to)
+	elif date_from:
+		travels_all = travels_all.exclude(date__lt=date_from)
+	elif date_to:
+		travels_all = travels_all.exclude(date__gt=date_to)
+
 
 	paginator = Paginator(travels_all, 25)
 	page = request.GET.get('page')
@@ -148,53 +135,41 @@ def group_save(request, group_id):
 
 @login_required
 def travel_pdf(request):
-	if 'date_from' in request.GET:
-		travels = Travel.objects.all()
-	else:
-		travels = Travel.objects.exclude(date__lt=datetime.today())
+	travels = Travel.objects.all()
 	info_raw = ()
-	try:
-		group = request.GET['group']
-		if group != '0':
-			travels = travels.filter(group=group)
-			info_raw += ("Grupo: " + Group.objects.all().get(pk=group).__str__(),)
-		else:
-			info_raw += ("Grupo: " + "TODOS",)
-	except:
-		info_raw += ("Grupo: " + "TODOS",)
 
-	try:
-		buscompany = request.GET['buscompany']
-		if buscompany != '0':
-			travels = travels.filter(bus__company=buscompany)
-			info_raw += ("Empresa:" + BusCompany.objects.all().get(pk=buscompany).__str__(),)
-		else:
-			info_raw += ("Empresa: " + "TODAS",)
-	except:
-		info_raw += ("Empresa: " + "TODAS",)
+	if 'group' in request.GET and request.GET['group'] != '0':
+		travels = travels.filter(group=request.GET['group'])
+		info_raw += ("Grupo: " + Group.objects.all().get(pk=request.GET['group']).__str__(),)
+	else:
+		info_raw += ("Grupo: TODOS",)
 
-	try:
-		driver = request.GET['driver']
-		if driver != '0':
-			travels = travels.filter(driver=driver)
-			info_raw += ("Conductor:" + Driver.objects.all().get(pk=driver).__str__(),)
-		else:
-			info_raw += ("Conductor: " + "TODOS",)
-	except:
-		info_raw += ("Conductor: " + "TODOS",)
+	if 'buscompany' in request.GET and request.GET['buscompany'] != '0':
+		travels = travels.filter(bus__company=request.GET['buscompany'])
+		info_raw += ("Empresa:" + BusCompany.objects.all().get(pk=request.GET['buscompany']).__str__(),)
+	else:
+		info_raw += ("Empresa: TODAS",)
 
-	try:
-		date_from = request.GET['date_from']
-		date_to = request.GET['date_to']
+	if 'driver' in request.GET and request.GET['driver'] != '0':
+		travels = travels.filter(driver=request.GET['driver'])
+		info_raw += ("Conductor:" + Driver.objects.all().get(pk=request.GET['driver']).__str__(),)
+	else:
+		info_raw += ("Conductor: TODOS",)
 
+
+	date_from = (request.GET['date_from'] if 'date_from' in request.GET else None)
+	date_to = (request.GET['date_to'] if 'date_to' in request.GET else None)
+	if date_from and date_to:
 		travels = travels.filter(date__range=[date_from, date_to])
-
 		info_raw += ("Fechas: {} - {}".format(datetime.strptime(date_from , '%Y-%m-%d').strftime('%d/%d/%y'), datetime.strptime(date_to , '%Y-%m-%d').strftime('%d/%d/%y')),)
-	except:
-		if date_from:
-			travels_all = travels_all.exclude(date__lt=date_from)
-			info_raw += ("Fechas: {} - " + "TODAS",)
-		info_raw += ("Fechas: " + "TODAS",)
+	elif date_from:
+		travels = travels.exclude(date__lt=date_from)
+		info_raw += ("Fechas: {} - // ".format(datetime.strptime(date_from , '%Y-%m-%d').strftime('%d/%d/%y')),)
+	elif date_to:
+		travels = travels.exclude(date__gt=date_to)
+		info_raw += ("Fechas: // - {} ".format(datetime.strptime(date_to , '%Y-%m-%d').strftime('%d/%d/%y')),)
+	else:
+		info_raw += ("Fechas: TODAS",)
 
 
 	response = HttpResponse(content_type='application/pdf')

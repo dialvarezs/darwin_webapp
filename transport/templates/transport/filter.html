@@ -1,5 +1,13 @@
 {% extends "transport/index.html" %}
 
+{% block dategroup %}
+<div class="input-group-addon"><span class="glyphicon glyphicon-calendar"/></div>
+<input type="date" class="form-control" id="inputDateFrom" name="date_from" value={{request.GET.date_from}}>
+<div class="input-group-addon"><span class="glyphicon">-</span></div>
+<input type="date" class="form-control" id="inputDateTo" name="date_to" value={{request.GET.date_to}}>
+
+{% endblock %}
+
 {%block search_nav_extra%}
 <div class="row" style="margin-bottom:10px">
 	<div class="col-md-12 text-right">
@@ -24,6 +32,12 @@
 	{% include "transport/group_modal.html" %}
 </nav>
 {% endif %}
+{% endblock %}
+
+{% block btn_print %}
+<a target="_blank" href="{% url 'transport:travel_pdf' %}?{{request.GET.urlencode}}">
+	<button class="btn btn-default"><span class="glyphicon glyphicon-print"/> Imprimir</button>
+</a>
 {% endblock %}
 
 {% block aditional_scripts %}
