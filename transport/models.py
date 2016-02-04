@@ -48,15 +48,14 @@ class Driver(models.Model):
 	__str_name__.short_description = 'nombre'
 
 	class Meta:
-		verbose_name = 'conductor'
-		verbose_name_plural = 'conductores'
+		verbose_name = 'chofer'
+		verbose_name_plural = 'choferes'
 		ordering = ['surnames', 'names']
 
 
 class Destination(models.Model):
 	name = models.CharField(max_length=32, verbose_name='nombre')
 	short_name = models.CharField(max_length=16, verbose_name='nombre corto')
-	stretchs = models.ManyToManyField('Stretch'	, through='StretchDestinations')
 
 	def __str__(self):
 		return self.name
@@ -177,7 +176,7 @@ class Group(models.Model):
 class Travel(models.Model):
 	group = models.ForeignKey(Group, verbose_name='grupo')
 	bus = models.ForeignKey(Bus, blank=True, null=True, verbose_name='bus')
-	driver = models.ForeignKey(Driver, blank=True, null=True, verbose_name='conductor')
+	driver = models.ForeignKey(Driver, blank=True, null=True, verbose_name='chofer')
 	itinerary = models.ForeignKey(Itinerary, verbose_name='itinerario')
 	date = models.DateField(verbose_name='fecha')
 	time = models.TimeField(blank=True, null=True, verbose_name='hora')

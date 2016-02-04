@@ -1,7 +1,6 @@
 from django.contrib import admin
 
 from django import forms
-from django_admin_bootstrapped.admin.models import SortableInline
 
 from .models import Bus, BusCompany, Driver, Destination, Stretch, StretchDestinations, Itinerary, Company, Group, Travel, IDType, Passenger
 from . import validators
@@ -93,7 +92,7 @@ class TravelAdmin(admin.ModelAdmin):
 			kwargs['queryset'] = Bus.objects.filter(is_available=True)
 		return super(TravelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 	list_display = ('__str__', 'group', 'bus', 'driver', 'itinerary', 'date', 'time')
-	list_filter = ('group', 'driver', 'date')
+	list_filter = ('group', 'driver', 'itinerary__stretch', 'date')
 
 class PassengerAdmin(admin.ModelAdmin):
 	list_display = ('__str__', 'names', 'surnames')

@@ -31,13 +31,24 @@
 										</select>
 									</div>
 								</div>
-								<div class="form-group col-md-2" style="padding-left:0px; padding-right:5px">
+								<div class="form-group col-md-3" style="padding-left:0px; padding-right:5px">
 									<div class="input-group">
-										<div class="input-group-addon"><span class="glyphicon">Empresa</span></div>
+										<div class="input-group-addon"><span class="glyphicon">Empresa (Transporte)</span></div>
 										<select class="form-control" id="selectBusCompany" name="buscompany">
 											<option value=0>TODAS</option>
 										{% for buscompany in buscompanies %}
 											<option value={{ buscompany.pk }} {% if request.GET.buscompany|add:0 == buscompany.pk %}selected{% endif %}>{{ buscompany }}</option>
+										{% endfor %}
+										</select>
+									</div>
+								</div>
+								<div class="form-group col-md-3" style="padding-left:0px; padding-right:5px">
+									<div class="input-group">
+										<div class="input-group-addon"><span class="glyphicon">Empresa (Turismo)</span></div>
+										<select class="form-control" id="selectCompany" name="company">
+											<option value=0>TODAS</option>
+										{% for company in companies %}
+											<option value={{ company.pk }} {% if request.GET.company|add:0 == company.pk %}selected{% endif %}>{{ company }}</option>
 										{% endfor %}
 										</select>
 									</div>
@@ -53,7 +64,7 @@
 										</select>
 									</div>
 								</div>
-								<div class="form-group col-md-4" style="padding-left:0px; padding-right:5px">
+								<div class="form-group col-md-10" style="padding-left:0px; padding-right:5px; padding-top:8px">
 									<div class="input-group">
 										{% block dategroup %}
 										<div class="input-group-addon"><span class="glyphicon glyphicon-calendar"/></div>
@@ -63,8 +74,8 @@
 										{% endblock %}
 									</div>
 								</div>
-								<div class="col-md-1 text-right">
-									<button type="submit" class="btn btn-default navbar-btn" style="margin:0px; margin-left:82px">
+								<div class="col-md-1 text-right" style="margin:0px; padding-left:97px">
+									<button type="submit" class="btn btn-default navbar-btn">
 										Filtrar
 									</button>
 								</div>

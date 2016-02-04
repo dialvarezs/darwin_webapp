@@ -15,6 +15,7 @@ def index(request):
 	travels_all = Travel.objects.exclude(date__lt=datetime.today())
 	groups = Group.objects.all()
 	busses = Bus.objects.filter(is_available=True)
+	companies = Company.objects.all()
 	buscompanies = BusCompany.objects.all()
 	drivers = Driver.objects.all()
 	itineraries = Itinerary.objects.all()
@@ -29,7 +30,7 @@ def index(request):
 	except EmptyPage:
 		travels = paginator.page(paginator.num_pages)    
 
-	context = {'nbar':'transport', 'logo':'img/logo-darwin-mini.png', 'travels':travels, 'groups':groups, 'busses':busses, 'buscompanies':buscompanies, 'drivers':drivers, 'itineraries':itineraries}
+	context = {'nbar':'transport', 'logo':'img/logo-darwin-mini.png', 'travels':travels, 'groups':groups, 'busses':busses, 'companies':companies, 'buscompanies':buscompanies, 'drivers':drivers, 'itineraries':itineraries}
 	return render(request, 'transport/index.html', context)
 
 @login_required
@@ -46,6 +47,9 @@ def filter(request):
 	if 'group' in request.GET and request.GET['group'] != '0':
 		travels_all = travels_all.filter(group=request.GET['group'])
 		current_group = Group.objects.get(pk=request.GET['group'])
+
+	if 'company' in request.GET and request.GET['company'] != '0':
+		travels_all = travels_all.filter(group__company=request.GET['company'])
 
 	if 'buscompany' in request.GET and request.GET['buscompany'] != '0':
 		travels_all = travels_all.filter(bus__company=request.GET['buscompany'])
@@ -144,11 +148,17 @@ def travel_pdf(request):
 	else:
 		info_raw += ("Grupo: TODOS",)
 
+	if 'company' in request.GET and request.GET['company'] != '0':
+		travels = travels.filter(group__company=request.GET['company'])
+		info_raw += ("Empresa (Turismo):" + Company.objects.all().get(pk=request.GET['company']).short_name,)
+	else:
+		info_raw += ("Empresa (Turismo): TODAS",)
+
 	if 'buscompany' in request.GET and request.GET['buscompany'] != '0':
 		travels = travels.filter(bus__company=request.GET['buscompany'])
-		info_raw += ("Empresa:" + BusCompany.objects.all().get(pk=request.GET['buscompany']).__str__(),)
+		info_raw += ("Empresa (Transportes):" + BusCompany.objects.all().get(pk=request.GET['buscompany']).__str__(),)
 	else:
-		info_raw += ("Empresa: TODAS",)
+		info_raw += ("Empresa (Transportes): TODAS",)
 
 	if 'driver' in request.GET and request.GET['driver'] != '0':
 		travels = travels.filter(driver=request.GET['driver'])
