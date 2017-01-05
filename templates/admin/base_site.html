@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+{% load i18n %}{% load admin_static bootstrapped_goodies_tags %}
+
+{% block title %}Victor Alarcón - Administración{% endblock %}
+
+{% block extrastyle %}
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	<!-- Personal CSS -->
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+{% endblock %}
+
+{% block branding %}
+	<span class="navbar-brand">Victor Alarcón</span>
+	<ul class="nav navbar-nav">
+		<li class="{% if nbar == 'transport' %}active{% endif %}"><a href="{% url 'transport:index' %}">Transportes</a></li>
+		<li class="{% if nbar == 'equipment_leasing' %}active{% endif %}"><a href="{% url 'equipment_leasing:index' %}">Arriendo de Equipos</a></li>
+		<li class="{% if '/admin/' in request.path %}active{% endif %}"><a href="{% url 'admin:index' %}">Administración</a></li>
+	</ul>
+{% endblock %}
+{% block usertools %}
+	<li class="dropdown">
+	  {% block welcome-msg %}
+	      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><strong>{% firstof user.get_full_name user.get_username %}</strong> <span class="caret"></span></a>
+	  {% endblock %}
+	  <ul class="dropdown-menu">
+	      {% if user.has_usable_password %}
+	      <li><a href="{% url 'admin:password_change' %}">Cambiar contraseña</a></li>
+	      {% endif %}
+	      <li><a href="{% url 'admin:logout' %}">Cerrar sesión</a></li>
+	  </ul>
+	</li>
+{% endblock %}
+{% block logs %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

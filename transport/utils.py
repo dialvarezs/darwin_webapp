@@ -1,6 +1,7 @@
 from datetime import datetime
 from .models import Group
 
+
 def group_autoid():
 	yy = datetime.now().year if datetime.now().month > 9 else datetime.now().year-1
 	yy = str(yy)[2:]+str(yy+1)[2:]

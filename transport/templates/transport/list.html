@@ -1,6 +1,8 @@
 {% extends "base/base.html" %}
 
-{% block titles %} Darwin Transportes {% endblock %}
+{% load filters_extra %}
+
+{% block title %} Darwin Transportes {% endblock %}
 
 {% block content %}
 
@@ -17,12 +19,12 @@
 						</button>
 						<span class="navbar-brand">Filtro</span>
 					</div>
-					<div id="filter-navbar-collapse" class="navbar-collapse collapse" style="padding-top:10px">
-						<form class="form-inline" action="{% url 'transport:filter'%}" method="GET" role="search">
+					<div id="filter-navbar-collapse" class="navbar-collapse collapse">
+						<form class="form-inline" action="{% url 'transport:index'%}" method="GET" role="search">
 							<div class="form-inline">
 								<div class="form-group col-md-2" style="padding-left:0px; padding-right:5px">
 									<div class="input-group">
-										<div class="input-group-addon"><span class="glyphicon">Grupo</span></div>
+										<div class="input-group-addon">Grupo</div>
 										<select class="form-control" id="selectGroup" name="group">
 											<option value=0>TODOS</option>
 										{% for group in groups %}
@@ -33,7 +35,7 @@
 								</div>
 								<div class="form-group col-md-3" style="padding-left:0px; padding-right:5px">
 									<div class="input-group">
-										<div class="input-group-addon"><span class="glyphicon">Empresa (Transporte)</span></div>
+										<div class="input-group-addon">Empresa (Transporte)</div>
 										<select class="form-control" id="selectBusCompany" name="buscompany">
 											<option value=0>TODAS</option>
 										{% for buscompany in buscompanies %}
@@ -44,7 +46,7 @@
 								</div>
 								<div class="form-group col-md-3" style="padding-left:0px; padding-right:5px">
 									<div class="input-group">
-										<div class="input-group-addon"><span class="glyphicon">Empresa (Turismo)</span></div>
+										<div class="input-group-addon">Empresa (Turismo)</div>
 										<select class="form-control" id="selectCompany" name="company">
 											<option value=0>TODAS</option>
 										{% for company in companies %}
@@ -55,7 +57,7 @@
 								</div>
 								<div class="form-group col-md-2" style="padding-left:0px; padding-right:5px">
 									<div class="input-group">
-										<div class="input-group-addon"><span class="glyphicon">Chofer</span></div>
+										<div class="input-group-addon">Chofer</div>
 										<select class="form-control" id="selectDriver" name="driver">
 											<option value=0>TODOS</option>
 										{% for driver in drivers %}
@@ -68,9 +70,11 @@
 									<div class="input-group">
 										{% block dategroup %}
 										<div class="input-group-addon"><span class="glyphicon glyphicon-calendar"/></div>
-										<input type="date" class="form-control" id="inputDateFrom" name="date_from" value={% now 'Y-m-d'%}>
+										<input type="date" class="form-control" id="inputDateFrom" name="date_from"
+										       value={% if request.GET.date_from %}{{request.GET.date_from}}{% else %}{% now 'Y-m-d'%}{% endif %}>
 										<div class="input-group-addon"><span class="glyphicon">-</span></div>
-										<input type="date" class="form-control" id="inputDateTo" name="date_to">
+										<input type="date" class="form-control" id="inputDateTo" name="date_to"
+										       value={% if request.GET.date_to %}{{request.GET.date_to}}{% else %}""{% endif %}>
 										{% endblock %}
 									</div>
 								</div>
@@ -83,21 +87,45 @@
 						</form>
 					</div>
 					{% block search_nav_extra %}
+						<div class="row" style="margin-bottom:10px">
+							<div class="col-md-12 text-right">
+								<a href="{% url 'transport:index' %}" class="btn btn-danger" role="button">
+									Anular Filtro
+								</a>
+							</div>
+						</div>
 					{% endblock %}
 				</div>
 			</nav>
 			{% block nav_extra %}
+				{% if request.GET.group|add:0 > 0 %}
+					<nav class="navbar navbar-default">
+						<div class="container">
+							<div class="navbar-header">
+								<span class="navbar-brand">Grupo {{current_group}}</span>
+							</div>
+							<ul class="nav navbar-nav navbar-right">
+								<li>
+									<a href="#" type="button" data-toggle="modal" data-target="#groupModal" role="button">
+										<span class="glyphicon glyphicon-info-sign"></span> <strong>Detalles</strong>
+									</a>
+								</li>
+							</ul>
+						</div>
+						{% include "transport/group_modal.html" %}
+					</nav>
+				{% endif %}
 			{% endblock %}
 			{% endblock %}
 		</div>
 		<div class="row">
 			<p class="text-right">
-				<a href="#" data-toggle="modal" data-target="#travelModal0">
-					<button class="btn btn-default"><span class="glyphicon glyphicon-plus"/> Nuevo</button>
+				<a class="btn btn-default" href="#" data-toggle="modal" data-target="#travelModal0">
+					<span class="glyphicon glyphicon-plus"></span> Nuevo
 				</a>
 				{% block btn_print %}
-				<a target="_blank" href="{% url 'transport:travel_pdf' %}?date_from={% now 'Y-m-d' %}">
-					<button class="btn btn-default"><span class="glyphicon glyphicon-print"/> Imprimir</button>
+				<a class="btn btn-default" target="_blank" href="{% url 'transport:travel_pdf' %}?date_from={% now 'Y-m-d' %}">
+					<span class="glyphicon glyphicon-print"></span> Imprimir
 				</a>
 				{% endblock %}
 			</p>
@@ -120,39 +148,55 @@
 						<th></th>
 					</tr>
 					{% for travel in travels %}
-					<tr {% ifchanged travel.date %}style="border-top: double grey;"{% endifchanged %}>
+					<tr {% ifchanged travel.date %}class="doubleline"{% endifchanged %}>
 						<td>{{ travel.pk|stringformat:"04d" }}</td>
-						<td><a href="{% url 'transport:filter' %}?group={{travel.group.pk}}&date_from={% now "Y-m-d" %}">{{ travel.group }}</a>{% if travel.group.debt|add:0 > 0 %} <span style="color:red; font-weight: bold;">(D)</span>{% endif %}</td>
+						<td>
+							<a href="{% url 'transport:index' %}?group={{travel.group.pk}}&date_from={% now "Y-m-d" %}">{{ travel.group }}</a>
+							{% if travel.group.debt|add:0 > 0 %} <span class="glyphicon glyphicon-credit-card" style="color: red"></span>{% endif %}
+						</td>
 						<td>{% if travel.bus %}{{ travel.bus }}{% else %}-----{% endif %}</td>
-						<td>{% if travel.driver %}<a href="{% url 'transport:filter' %}?driver={{travel.driver.pk}}&date_from={% now "Y-m-d" %}">{{ travel.driver }}</a>{% else %}-----{% endif %}</td>
-						<td>{% if travel.bus %}<a href="{% url 'transport:filter' %}?buscompany={{travel.bus.company.pk}}&date_from={% now "Y-m-d" %}">{{ travel.bus.company }}</a>{% else %}-----{% endif %}</td>
+						<td>
+							{% if travel.driver %}
+								<a href="{% url 'transport:index' %}?driver={{travel.driver.pk}}&date_from={% now "Y-m-d" %}">{{ travel.driver }}</a>
+							{% else %}-----{% endif %}
+						</td>
+						<td>{% if travel.bus %}<a href="{% url 'transport:index' %}?buscompany={{travel.bus.company.pk}}&date_from={% now "Y-m-d" %}">{{ travel.bus.company }}</a>
+							{% else %}-----{% endif %}
+						</td>
 						<td>{{ travel.itinerary.stretch }}</td>
 						<td>{{ travel.itinerary.app_people }}+{{travel.itinerary.guides}}</td>
 						<td>{{ travel.date }}</td>
 						<td>{% if travel.time %}{{ travel.time }}{% else %}--:--{% endif %}</td>
 						<td>{% if travel.notes %}<span class="glyphicon glyphicon glyphicon-info-sign">{% endif %}</td>
-						<td style="text-align:center"><a href="#" type="button" data-toggle="modal" data-target="#travelModal{{travel.pk}}" role="button"><span class="glyphicon glyphicon glyphicon-edit"></a></td>
+						<td class="text-center">
+							<a href="#" data-toggle="modal" data-target="#travelModal{{travel.pk}}" role="button">
+								<span class="glyphicon glyphicon glyphicon-edit"></span>
+							</a>
+						</td>
 						{% include "transport/travel_modal.html" %}
 					</tr>
 					{% endfor %}
 				</table>
 			</div>
-			<ul class="pagination">
-				{% load filters_extra %}
-				<li {% if not travels.has_previous %}class="disabled"{%endif%}>
-					<a {%if travels.has_previous%}href="?{% url_replace 'page' travels.previous_page_number %}"{%endif%}>
-						<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
-					</a>
-				</li>
-				{% for i in travels.paginator.num_pages|pages:travels.number %}
-				<li {%if travels.number == i %}class="active"{%endif%}><a href="?{% url_replace 'page' i %}">{{i}}</a></li>
-				{% endfor %}
-				<li {% if not travels.has_next %}class="disabled"{%endif%}>
-					<a {%if travels.has_next%}href="?{% url_replace 'page' travels.next_page_number %}"{%endif%}>
-						<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
-					</a>
-				</li>
-			</ul>
+			<div class="row text-center">
+				<ul class="pagination">
+					<li {% if not travels.has_previous %}class="disabled"{%endif%}>
+						<a {%if travels.has_previous%}href="?{% url_replace 'page' travels.previous_page_number %}"{%endif%}>
+							<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+						</a>
+					</li>
+					{% for i in travels.paginator.num_pages|pages:travels.number %}
+					<li {%if travels.number == i %}class="active"{%endif%}>
+						<a href="?{% url_replace 'page' i %}">{{i}}</a>
+					</li>
+					{% endfor %}
+					<li {% if not travels.has_next %}class="disabled"{%endif%}>
+						<a {%if travels.has_next%}href="?{% url_replace 'page' travels.next_page_number %}"{%endif%}>
+							<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+						</a>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</div>
 
@@ -161,6 +205,20 @@
 {% block scripts %}
 	<script>
 		$(function(){
+			{% if current_group %}
+				$('#groupFormSubmit').click(function(event){
+				  event.preventDefault();
+					$.ajax({
+						url: "{% url 'transport:group_save' current_group.id %}",
+						type: "POST",
+						data: $('#groupForm').serialize(),
+						success: function(data){
+							location.reload();
+						}
+					});
+					$('#groupModal').modal('hide');
+				});
+			{% endif %}
 			$('#travelForm0Submit').click(function(event){
 			  event.preventDefault();
 				$.ajax({

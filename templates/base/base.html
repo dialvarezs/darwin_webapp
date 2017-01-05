@@ -1,18 +1,21 @@
 {% load staticfiles %}
-<!DOCTYPE html>
 <html lang="es">
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		{# <link rel="shortcut icon" href="{% static 'web/favicon.ico' %}"> #}
-		<title>{% block titles %}{% endblock %}</title>
+		<!-- link rel="shortcut icon" href="{% static 'web/favicon.ico' %}" -->
+		<title>{% block title %}{% endblock %}</title>
 		<!-- Bootstrap CSS -->
 		<link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 		<!-- Bootstrap DateTimePicker CSS -->
 		<link href="{% static 'css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
+		<!-- Roboto Font -->
+		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+		<!-- Personal CSS -->
+		<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
 		<!-- jQuery -->
-		<script src="{% static 'js/jquery-2.2.0.min.js' %}"></script>
+		<script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
 		<!-- Moment -->
 		<script src="{% static 'js/moment.min.js' %}"></script>
 		<script src="{% static 'js/moment_locale_es.js' %}"></script>
@@ -20,19 +23,10 @@
 		<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 		<!-- Boostrap DateTimePicker JS -->
 		<script src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
-		<!-- Personal CSS -->
-		{# <link rel="stylesheet" type="text/css" href="{% static 'web/css/style.css' %}" /> #}
 		
 		{% block extra_assets %}
 			<!-- assets -->	
 		{% endblock %}
-		
-		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-		<!--[if lt IE 9]>
-			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-		<![endif]-->
 		
 	</head>
 	

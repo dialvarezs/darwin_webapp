@@ -1,27 +1,28 @@
 {% extends "base/base.html" %}
-{% load i18n %}
+	{% load i18n %}
 
-{% block header %}
-<nav class="navbar navbar-default navbar-fixed-top">
-	<div class="container">
-		<div class="navbar-header">
-			<span class="navbar-brand">Victor Alarcón</span>
+	{% block header %}
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<span class="navbar-brand">Victor Alarcón</span>
+			</div>
 		</div>
+	</nav>
+	{% endblock %}
+
+	{% block breadcrumbs %}
+	{% endblock %}
+
+	{% block content %}
+
+	<div class="container">
+
+	<p>{% trans "Thanks for spending some quality time with the Web site today." %}</p>
+
+	<p><a href="{% url 'transport:index' %}" class="btn btn-default">{% trans 'Log in again' %}</a></p>
+
+	<div class="container">
 	</div>
-</nav>
-{% endblock %}
-
-{% block breadcrumbs %}
-{% endblock %}
-
-{% block content %}
-
-<div class="container">
-
-<p>{% trans "Thanks for spending some quality time with the Web site today." %}</p>
-
-<p><a href="{% url 'transport:index' %}" class="btn btn-default">{% trans 'Log in again' %}</a></p>
-
-<div class="container">
 
 {% endblock %}

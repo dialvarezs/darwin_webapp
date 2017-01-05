@@ -5,6 +5,7 @@ SEX_CHOICE = (
 	('f', 'femenino'),
 )
 
+
 class BusCompany(models.Model):
 	name = models.CharField(max_length=32, verbose_name='nombre')
 
@@ -22,7 +23,7 @@ class Bus(models.Model):
 	plate = models.CharField(max_length=6, blank=True, verbose_name='patente')
 	brand = models.CharField(max_length=32, verbose_name='marca')
 	model = models.CharField(max_length=32, verbose_name='modelo')
-	year = models.IntegerField(blank=True, verbose_name='año')
+	year = models.IntegerField(blank=True, null=True, verbose_name='año')
 	capacity = models.IntegerField(verbose_name='capacidad')
 	is_available = models.BooleanField(default=True, verbose_name='disponible')
 	notes = models.CharField(max_length=128, blank=True, verbose_name='notas')
@@ -43,6 +44,7 @@ class Driver(models.Model):
 
 	def __str__(self):
 		return self.names.split(' ')[0] + ' ' + self.surnames.split(' ')[0]
+
 	def __str_name__(self):
 		return self.names + ' ' + self.surnames
 	__str_name__.short_description = 'nombre'
@@ -72,6 +74,7 @@ class Stretch(models.Model):
 
 	def __str__(self):
 		return self.description
+
 	def __str_destinations__(self):
 		return ' - '.join([x.short_name for x in self.destinations.all().order_by('stretchdestinations__position')])
 	__str_destinations__.short_description = 'destinos'
@@ -163,7 +166,7 @@ class Group(models.Model):
 	debt = models.PositiveIntegerField(verbose_name='deuda')
 	charge = models.PositiveIntegerField(verbose_name='costo')
 	passengers = models.ManyToManyField(Passenger, verbose_name='pasajeros', blank=True)
-	
+
 	def __str__(self):
 		return "{} ({})".format(self.id_string, self.external_id)
 
