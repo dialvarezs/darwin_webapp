@@ -8,48 +8,58 @@ from io import BytesIO
 from datetime import datetime
 
 from .models import Travel, Group, Bus, BusCompany, Driver, Itinerary, Company
+from .utils import current_season
 from .pdf_print import DocumentBuilder
 
 
 @login_required
 def list_travels(request):
 	travels = Travel.objects.select_related('group', 'bus', 'bus__company', 'itinerary', 'itinerary__stretch', 'driver')
-	groups = Group.objects.all()
+	groups = Group.objects.filter(id_string__startswith=current_season())
 	busses = Bus.objects.filter(is_available=True).select_related('company')
 	companies = Company.objects.all()
 	buscompanies = BusCompany.objects.all()
 	drivers = Driver.objects.all()
 	itineraries = Itinerary.objects.all().select_related('stretch')
 	current_group = None
+	filters = []
 
 	if 'group' in request.GET and request.GET['group'] != '0':
 		travels = travels.filter(group=request.GET['group'])
 		current_group = Group.objects.get(pk=request.GET['group'])
+		filters.append("Grupo: " + current_group.__str__())
 
 	if 'company' in request.GET and request.GET['company'] != '0':
 		travels = travels.filter(group__company=request.GET['company'])
+		filters.append("Empresa (Turismo): " + Company.objects.get(pk=request.GET['company']).__str__())
 
 	if 'buscompany' in request.GET and request.GET['buscompany'] != '0':
 		travels = travels.filter(bus__company=request.GET['buscompany'])
+		filters.append("Empresa (Buses): " + BusCompany.objects.get(pk=request.GET['buscompany']).__str__())
 
 	if 'driver' in request.GET and request.GET['driver'] != '0':
 		travels = travels.filter(driver=request.GET['driver'])
+		filters.append("Chofer: " + Driver.objects.get(pk=request.GET['driver']).__str__())
 
 	date_from = (request.GET['date_from'] if 'date_from' in request.GET else None)
 	date_to = (request.GET['date_to'] if 'date_to' in request.GET else None)
 	if date_from and date_to:
 		travels = travels.filter(date__range=[date_from, date_to])
+		filters.append("Fechas: {} - {}".format(datetime.strptime(date_from, '%Y-%m-%d').strftime('%d/%d/%y'),
+						datetime.strptime(date_to, '%Y-%m-%d').strftime('%d/%d/%y')))
 	elif date_from:
 		travels = travels.exclude(date__lt=date_from)
+		filters.append("Fechas: {} - // ".format(datetime.strptime(date_from, '%Y-%m-%d').strftime('%d/%d/%y')))
 	elif date_to:
 		travels = travels.exclude(date__gt=date_to)
+		filters.append("Fechas: // - {} ".format(datetime.strptime(date_to, '%Y-%m-%d').strftime('%d/%d/%y')))
 	else:
 		travels = travels.exclude(date__lt=datetime.today())
 
-	travels = __pagination(travels, 25, request.GET.get('page'))
+	travels = __pagination(travels, 20, request.GET.get('page'))
 
-	context = {'logo': 'img/logo-darwin-mini.png', 'travels': travels, 'groups': groups, 'busses': busses, 'buscompanies': buscompanies,
-		'drivers': drivers, 'itineraries': itineraries, 'companies': companies, 'current_group': current_group}
+	context = {'logo': 'resources/img/logo-darwin-mini.png', 'travels': travels, 'groups': groups, 'busses': busses, 'buscompanies': buscompanies,
+		'drivers': drivers, 'itineraries': itineraries, 'companies': companies, 'current_group': current_group, 'filters': filters}
 	return render(request, 'transport/list.html', context)
 
 
@@ -145,7 +155,8 @@ def travel_pdf(request):
 	date_to = (request.GET['date_to'] if 'date_to' in request.GET else None)
 	if date_from and date_to:
 		travels = travels.filter(date__range=[date_from, date_to])
-		info_raw += ("Fechas: {} - {}".format(datetime.strptime(date_from, '%Y-%m-%d').strftime('%d/%d/%y'), datetime.strptime(date_to, '%Y-%m-%d').strftime('%d/%d/%y')),)
+		info_raw += ("Fechas: {} - {}".format(datetime.strptime(date_from, '%Y-%m-%d').strftime('%d/%d/%y'),
+			datetime.strptime(date_to, '%Y-%m-%d').strftime('%d/%d/%y')),)
 	elif date_from:
 		travels = travels.exclude(date__lt=date_from)
 		info_raw += ("Fechas: {} - // ".format(datetime.strptime(date_from, '%Y-%m-%d').strftime('%d/%d/%y')),)

@@ -41,19 +41,13 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        # 'APP_DIRS': True,
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-            ],
-            'loaders': [
-                'hamlpy.template.loaders.HamlPyFilesystemLoader',
-                'hamlpy.template.loaders.HamlPyAppDirectoriesLoader',
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader'
             ],
         },
     },
@@ -74,14 +68,14 @@ DATABASES = {
 }
 
 # debug-toolbar
-INTERNAL_IPS = ['127.0.0.1']
-
-INSTALLED_APPS += [
-    'debug_toolbar',
-]
-MIDDLEWARE += [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-]
+# INTERNAL_IPS = ['127.0.0.1']
+#
+# INSTALLED_APPS += [
+#     'debug_toolbar',
+# ]
+# MIDDLEWARE += [
+#     'debug_toolbar.middleware.DebugToolbarMiddleware',
+# ]
 
 LANGUAGE_CODE = 'es-cl'
 

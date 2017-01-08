@@ -12,7 +12,7 @@
 				{% csrf_token %}
 					<div class="form group">
 						<label for="selectGroup">Grupo</label>
-						<select class="form-control" id="selectGroup" name="group">
+						<select class="form-control selectpicker" id="selectGroup" name="group" data-size="10" data-live-search="true">
 							{% for group in groups %}
 							<option value={{ group.pk }} {% if travel.group == group %}selected{% endif %}>{{ group }}</option>
 							{% endfor %}
@@ -20,7 +20,7 @@
 					</div>
 					<div class="form group">
 						<label for="selectBus">Bus</label>
-						<select class="form-control" id="selectBus" name="bus">
+						<select class="form-control selectpicker" id="selectBus" name="bus" data-size="10" data-live-search="true">
 							<option value=0 {% if not travel.bus %}selected{% endif %}>-----</option>
 							{% for bus in busses %}
 							<option value={{ bus.pk }} {% if travel.bus == bus %}selected{% endif %}>{{ bus }} ({{bus.company}})</option>
@@ -29,7 +29,7 @@
 					</div>
 					<div class="form group">
 						<label for="selectDriver">Conductor</label>
-						<select class="form-control" id="selectDriver" name="driver">
+						<select class="form-control selectpicker" id="selectDriver" name="driver" data-size="10" data-live-search="true">
 							<option value=0 {% if not travel.driver %}selected{% endif %}>-----</option>
 							{% for driver in drivers %}
 							<option value={{ driver.pk }} {% if travel.driver == driver %}selected{% endif %}>{{ driver }}</option>
@@ -38,7 +38,7 @@
 					</div>
 					<div class="form group">
 						<label for="selectItinerary">Itinerario</label>
-						<select class="form-control" id="selectItinerary" name="itinerary">
+						<select class="form-control selectpicker" id="selectItinerary" name="itinerary" data-size="10" data-live-search="true">
 							{% for itinerary in itineraries %}
 							<option value={{ itinerary.pk }} {% if travel.itinerary == itinerary %}selected{% endif %}>{{ itinerary }}</option>
 							{% endfor %}

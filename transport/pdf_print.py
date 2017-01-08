@@ -68,7 +68,7 @@ class DocumentBuilder:
 	def travel_list(self, info, travels):
 		self._company = "Transportes Darwin"
 		self._title = "Listado de Viajes"
-		self._logo_path = "static/img/logo-darwin-mini.png"
+		self._logo_path = "static/resources/img/logo-darwin-mini.png"
 
 		data = [('Viaje', 'Grupo', 'Bus', 'Empresa', 'Conductor', 'Itinerario', 'Fecha', 'Hora', 'Notas')]
 		for travel in travels:

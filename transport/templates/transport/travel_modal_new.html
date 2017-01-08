@@ -12,7 +12,7 @@
 				{% csrf_token %}
 					<div class="form group">
 						<label for="selectGroup">Grupo</label>
-						<select class="form-control" id="selectGroup" name="group">
+						<select class="form-control selectpicker" id="selectGroup" name="group" data-size="10" data-live-search="true">
 							{% for group in groups %}
 							<option value={{ group.pk }}>{{ group }}</option>
 							{% endfor %}
@@ -20,7 +20,7 @@
 					</div>
 					<div class="form group">
 						<label for="selectBus">Bus</label>
-						<select class="form-control" id="selectBus" name="bus">
+						<select class="form-control selectpicker" id="selectBus" name="bus" data-size="10" data-live-search="true">
 							<option value=0>-----</option>
 							{% for bus in busses %}
 							<option value={{ bus.pk }}>{{ bus }} ({{bus.company}})</option>
@@ -29,7 +29,7 @@
 					</div>
 					<div class="form group">
 						<label for="selectDriver">Conductor</label>
-						<select class="form-control" id="selectDriver" name="driver">
+						<select class="form-control selectpicker" id="selectDriver" name="driver" data-size="10" data-live-search="true">
 							<option value=0>-----</option>
 							{% for driver in drivers %}
 							<option value={{ driver.pk }}>{{ driver }}</option>
@@ -38,7 +38,7 @@
 					</div>
 					<div class="form group">
 						<label for="selectItinerary">Itinerario</label>
-						<select class="form-control" id="selectItinerary" name="itinerary">
+						<select class="form-control selectpicker" id="selectItinerary" name="itinerary" data-size="10" data-live-search="true">
 							{% for itinerary in itineraries %}
 							<option value={{ itinerary.pk }}>{{ itinerary }}</option>
 							{% endfor %}

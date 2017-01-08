@@ -1,0 +1,31 @@
+body {
+	font-family: "Roboto" !important;
+}
+
+table {
+	font-size: 100%;
+}
+
+.pagination>li>a{
+	height: 34px;
+}
+
+#filter-navbar-collapse {
+	padding-top: 10px;
+}
+
+tr.doubleline {
+	border-top: double grey;
+}
+
+.nopadding {
+	padding: 0px;
+}
+
+.nopadding-right {
+	padding-right: 0px;
+}
+
+.font12 {
+	font-size: 12px;
+}
