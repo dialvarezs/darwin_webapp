@@ -12,7 +12,7 @@
 				{% csrf_token %}
 					<div class="form group">
 						<label for="selectGroup">Grupo</label>
-						<select class="form-control selectpicker" id="selectGroup" name="group" data-size="10" data-live-search="true">
+						<select class="form-control" id="selectGroup" name="group">
 							{% for group in groups %}
 							<option value={{ group.pk }} {% if travel.group == group %}selected{% endif %}>{{ group }}</option>
 							{% endfor %}
@@ -20,7 +20,7 @@
 					</div>
 					<div class="form group">
 						<label for="selectBus">Bus</label>
-						<select class="form-control selectpicker" id="selectBus" name="bus" data-size="10" data-live-search="true">
+						<select class="form-control" id="selectBus" name="bus">
 							<option value=0 {% if not travel.bus %}selected{% endif %}>-----</option>
 							{% for bus in busses %}
 							<option value={{ bus.pk }} {% if travel.bus == bus %}selected{% endif %}>{{ bus }} ({{bus.company}})</option>
@@ -29,7 +29,7 @@
 					</div>
 					<div class="form group">
 						<label for="selectDriver">Conductor</label>
-						<select class="form-control selectpicker" id="selectDriver" name="driver" data-size="10" data-live-search="true">
+						<select class="form-control" id="selectDriver" name="driver">
 							<option value=0 {% if not travel.driver %}selected{% endif %}>-----</option>
 							{% for driver in drivers %}
 							<option value={{ driver.pk }} {% if travel.driver == driver %}selected{% endif %}>{{ driver }}</option>
@@ -38,19 +38,23 @@
 					</div>
 					<div class="form group">
 						<label for="selectItinerary">Itinerario</label>
-						<select class="form-control selectpicker" id="selectItinerary" name="itinerary" data-size="10" data-live-search="true">
+						<select class="form-control" id="selectItinerary" name="itinerary">
 							{% for itinerary in itineraries %}
 							<option value={{ itinerary.pk }} {% if travel.itinerary == itinerary %}selected{% endif %}>{{ itinerary }}</option>
 							{% endfor %}
 						</select>
 					</div>
 					<div class="form group">
-						<label for="datetimePicker{{ travel.id }}">Fecha/Hora</label>
-						<div class='input-group date' id='datetimePicker{{ travel.id }}'>
-							<input type='text' class="form-control" name="datetime" value="{{ travel.date|date:"d/m/Y" }} {{travel.time}}"/>
+						<label for="datetimePicker">Fecha/Hora</label>
+						<div class='input-group' id="datetimePicker">
 							<span class="input-group-addon">
 								<span class="glyphicon glyphicon-calendar"></span>
 							</span>
+							<input type='date' class="form-control" name="date" value="{{ travel.date|date:"Y-m-d" }}" placeholder="dd/mm/aaaa"/>
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-time"></span>
+							</span>
+							<input type='time' class="form-control" name="time" value="{% if travel.time %}{{travel.time}}{% endif %}" placeholder="hh:mm"/>
 						</div>
 					</div>
 					<div class="form group">

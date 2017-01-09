@@ -8,7 +8,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 INSTALLED_APPS = [
     'django_admin_bootstrapped',
     'django.contrib.admin',
@@ -25,14 +24,13 @@ INSTALLED_APPS += [
 ]
 
 MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
 ]
 
 ROOT_URLCONF = 'valarcon.urls'
@@ -54,7 +52,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'valarcon.wsgi.application'
-
 
 DATABASES = {
     'default': {

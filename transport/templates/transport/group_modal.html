@@ -20,7 +20,7 @@
 					</div>
 					<div class="form group">
 						<label for="companySelect">Empresa</label>
-						<select class="form-control selectpicker" id="companySelect" name="company" data-size="10" data-live-search="true">
+						<select class="form-control selectpicker" id="companySelect" name="company" data-size="15" data-live-search="true">
 						{% for company in companies %}
 							<option value={{ company.pk }} {% if current_group.company == company %}selected{% endif %}>{{ company }}</option>
 						{% endfor %}

@@ -14,7 +14,7 @@ from .pdf_print import DocumentBuilder
 
 @login_required
 def list_travels(request):
-	travels = Travel.objects.select_related('group', 'bus', 'bus__company', 'itinerary', 'itinerary__stretch', 'driver')
+	travels = Travel.objects.all().select_related('group', 'bus', 'bus__company', 'itinerary', 'itinerary__stretch', 'driver')
 	groups = Group.objects.filter(id_string__startswith=current_season())
 	busses = Bus.objects.filter(is_available=True).select_related('company')
 	companies = Company.objects.all()
@@ -80,7 +80,8 @@ def travel_save(request, travel_id=None):
 		else:
 			bus = None
 		itinerary = Itinerary.objects.get(pk=request.POST['itinerary'])
-		datetime_field = request.POST['datetime']
+		date_field = request.POST['date']
+		time_field = request.POST['time']
 		notes = request.POST['notes']
 	except:
 		pass
@@ -89,8 +90,8 @@ def travel_save(request, travel_id=None):
 		t.bus = bus
 		t.driver = driver
 		t.itinerary = itinerary
-		t.date = datetime.strptime(datetime_field.split(' ')[0], '%d/%m/%Y').strftime('%Y-%m-%d')
-		t.time = datetime_field.split(' ')[1]
+		t.date = date_field
+		t.time = time_field
 		t.notes = notes
 		t.save()
 
