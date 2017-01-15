@@ -1,6 +1,6 @@
 {% extends "base/base.html" %}
 
-{% load filters_extra %}
+{% load transport_extras %}
 
 {% block title %} Darwin Transportes {% endblock %}
 
@@ -84,14 +84,14 @@
 									{% endblock %}
 								</div>
 								<div class="text-right">
-									<button type="submit" class="btn btn-primary">
-										Filtrar
-									</button>
 									{% if filters %}
 										<a href="{% url 'transport:index' %}" class="btn btn-danger" role="button">
 											Anular Filtro
 										</a>
 									{% endif %}
+									<button type="submit" class="btn btn-primary">
+										Filtrar
+									</button>
 								</div>
 							</form>
 						</div>
@@ -151,7 +151,7 @@
 					</tr>
 					{% for travel in travels %}
 					<tr {% ifchanged travel.date %}class="doubleline"{% endifchanged %}>
-						<td>{{ travel.pk|stringformat:"04d" }}</td>
+						<td>{{ travel.pk|stringformat:"05d" }}</td>
 						<td>
 							<a href="{% url 'transport:index' %}?group={{travel.group.pk}}&date_from={% now "Y-m-d" %}">{{ travel.group }}</a>
 							{% if travel.group.debt|add:0 > 0 %} <span class="glyphicon glyphicon-credit-card" style="color: red"></span>{% endif %}

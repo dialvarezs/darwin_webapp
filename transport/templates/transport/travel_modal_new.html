@@ -10,7 +10,7 @@
 			<div class="modal-body">
 				<form id="travelForm0" action="{% url 'transport:travel_new' %}" method="post">
 				{% csrf_token %}
-					<div class="form group">
+					<div class="form-group">
 						<label for="selectGroup">Grupo</label>
 						<select class="form-control selectpicker" id="selectGroup" name="group" data-size="15" data-live-search="true">
 							{% for group in groups %}
@@ -18,7 +18,7 @@
 							{% endfor %}
 						</select>
 					</div>
-					<div class="form group">
+					<div class="form-group">
 						<label for="selectBus">Bus</label>
 						<select class="form-control selectpicker" id="selectBus" name="bus" data-size="15" data-live-search="true">
 							<option value=0>-----</option>
@@ -27,7 +27,7 @@
 							{% endfor %}
 						</select>
 					</div>
-					<div class="form group">
+					<div class="form-group">
 						<label for="selectDriver">Conductor</label>
 						<select class="form-control selectpicker" id="selectDriver" name="driver" data-size="15" data-live-search="true">
 							<option value=0>-----</option>
@@ -36,7 +36,7 @@
 							{% endfor %}
 						</select>
 					</div>
-					<div class="form group">
+					<div class="form-group">
 						<label for="selectItinerary">Itinerario</label>
 						<select class="form-control selectpicker" id="selectItinerary" name="itinerary" data-size="15" data-live-search="true">
 							{% for itinerary in itineraries %}
@@ -44,7 +44,7 @@
 							{% endfor %}
 						</select>
 					</div>
-					<div class="form group">
+					<div class="form-group">
 						<label for="datetimePicker">Fecha/Hora</label>
 						<div class='input-group' id="datetimePicker">
 							<span class="input-group-addon">
@@ -57,14 +57,14 @@
 							<input type='time' class="form-control" name="time" value="" placeholder="hh:mm"/>
 						</div>
 					</div>
-					<div class="form group">
+					<div class="form-group">
 						<label for="areaNotes">Notas</label>
 						<textarea class="form-control" id="areaNotes" name="notes"></textarea>
 					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
-				<button type="submit" class="btn btn-primary" value="submit" id="travelForm0Submit"><i class="glyphicon glyphicon-save"></i> Guardar</button>
+				<button type="submit" class="btn btn-primary" value="submit" id="travelForm0Submit"><i class="glyphicon glyphicon-save"></i> Registrar Viaje</button>
 				<button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> Cancelar</button>
 			</div>
 		</div>

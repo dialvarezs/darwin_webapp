@@ -35,7 +35,7 @@ class BusAdmin(admin.ModelAdmin):
 		if db_field.name == 'notes':
 			formfield.widget = forms.Textarea(attrs={'rows': 5})
 		return formfield
-	list_display = ('__str__', 'company', 'plate', 'model', 'capacity', 'is_available')
+	list_display = ['__str__', 'company', 'plate', 'model', 'capacity', 'is_available']
 
 
 class MyDriverAdminForm(forms.ModelForm):
@@ -65,14 +65,14 @@ class StretchDestinationsInline(admin.TabularInline):
 
 class StretchAdmin(admin.ModelAdmin):
 	inlines = [StretchDestinationsInline]
-	list_display = ('description', '__str_destinations__')
-	list_filter = ('destinations',)
-	search_fields = ('description',)
+	list_display = ['description', '__str_destinations__']
+	list_filter = ['destinations']
+	search_fields = ['description']
 
 
 class ItineraryAdmin(admin.ModelAdmin):
-	list_filter = ('stretch',)
-	search_fields = ('stretch__description',)
+	list_filter = ['stretch']
+	search_fields = ['stretch__description']
 
 
 class MyCompanyAdminForm(forms.ModelForm):
@@ -86,13 +86,13 @@ class MyCompanyAdminForm(forms.ModelForm):
 
 class CompanyAdmin(admin.ModelAdmin):
 	form = MyCompanyAdminForm
-	list_display = ('short_name', 'id_string', 'name', 'email')
+	list_display = ['short_name', 'id_string', 'name', 'email']
 
 
 class GroupAdmin(admin.ModelAdmin):
 	filter_vertical = ['passengers']
-	list_display = ('id_string', 'external_id', 'company', 'charge', 'debt')
-	list_filter = ('company',)
+	list_display = ['id_string', 'external_id', 'company', 'charge', 'debt']
+	list_filter = ['company']
 
 	def get_form(self, request, obj=None, **kwargs):
 		form = super(GroupAdmin, self).get_form(request, obj, **kwargs)
@@ -101,6 +101,8 @@ class GroupAdmin(admin.ModelAdmin):
 
 
 class TravelAdmin(admin.ModelAdmin):
+	list_display = ['__str__', 'group', 'bus', 'driver', 'itinerary', 'date', 'time']
+	list_filter = ['group', 'driver', 'itinerary__stretch', 'date']
 
 	def formfield_for_dbfield(self, db_field, **kwargs):
 		formfield = super(TravelAdmin, self).formfield_for_dbfield(db_field, **kwargs)
@@ -112,12 +114,10 @@ class TravelAdmin(admin.ModelAdmin):
 		if db_field.name == 'bus':
 			kwargs['queryset'] = Bus.objects.filter(is_available=True)
 		return super(TravelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-	list_display = ('__str__', 'group', 'bus', 'driver', 'itinerary', 'date', 'time')
-	list_filter = ('group', 'driver', 'itinerary__stretch', 'date')
 
 
 class PassengerAdmin(admin.ModelAdmin):
-	list_display = ('__str__', 'names', 'surnames')
+	list_display = ['__str__', 'names', 'surnames']
 
 
 class IDTypeAdmin(admin.ModelAdmin):

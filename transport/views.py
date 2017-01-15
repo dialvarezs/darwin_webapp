@@ -13,7 +13,7 @@ from .pdf_print import DocumentBuilder
 
 
 @login_required
-def list_travels(request):
+def travel_list(request):
 	travels = Travel.objects.all().select_related('group', 'bus', 'bus__company', 'itinerary', 'itinerary__stretch', 'driver')
 	groups = Group.objects.filter(id_string__startswith=current_season())
 	busses = Bus.objects.filter(is_available=True).select_related('company')
@@ -65,10 +65,6 @@ def list_travels(request):
 
 @login_required
 def travel_save(request, travel_id=None):
-	if travel_id:
-		t = get_object_or_404(Travel, pk=travel_id)
-	else:
-		t = Travel()
 	try:
 		group = Group.objects.get(pk=request.POST['group'])
 		if request.POST['bus'] != '0':
@@ -78,7 +74,7 @@ def travel_save(request, travel_id=None):
 		if request.POST['driver'] != '0':
 			driver = Driver.objects.get(pk=request.POST['driver'])
 		else:
-			bus = None
+			driver = None
 		itinerary = Itinerary.objects.get(pk=request.POST['itinerary'])
 		date_field = request.POST['date']
 		time_field = request.POST['time']
@@ -86,6 +82,10 @@ def travel_save(request, travel_id=None):
 	except:
 		pass
 	else:
+		if travel_id:
+			t = get_object_or_404(Travel, pk=travel_id)
+		else:
+			t = Travel()
 		t.group = group
 		t.bus = bus
 		t.driver = driver

@@ -3,24 +3,24 @@ from itertools import cycle
 import re
 
 
-def plate(plate):
-	if re.match('[A-Z]{2}[0-9]{4}|[B-DF-HJ-NP-TV-Z]{4}[0-9]{2}', plate.upper()):
+def plate(data):
+	if re.match('[A-Z]{2}[0-9]{4}|[B-DF-HJ-NP-TV-Z]{4}[0-9]{2}', data.upper()):
 		return True
 	else:
 		return False
 
 
-def year(year):
-	return year >= 1990 and year <= datetime.now().year + 1
+def year(data):
+	return 1990 <= data <= datetime.now().year + 1
 
 
-def ci(ci):
-	ci = ci.replace('.', '')
+def ci(data):
+	data = data.replace('.', '')
 
-	if '-' not in ci:
+	if '-' not in data:
 		return False
 
-	n, dv = ci.split('-')
+	n, dv = data.split('-')
 
 	s = 0
 	for x, y in zip(n[::-1], cycle(range(2,8))):
