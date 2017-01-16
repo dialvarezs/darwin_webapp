@@ -11,4 +11,4 @@ def current_season():
 
 def group_autoid():
 	num = str(Group.objects.filter(id_string__contains=current_season()+'-').count()+1).zfill(3)
-	return yy + '-' + num
+	return current_season() + '-' + num

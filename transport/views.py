@@ -17,10 +17,10 @@ def travel_list(request):
 	travels = Travel.objects.all().select_related('group', 'bus', 'bus__company', 'itinerary', 'itinerary__stretch', 'driver')
 	groups = Group.objects.filter(id_string__startswith=current_season())
 	busses = Bus.objects.filter(is_available=True).select_related('company')
-	companies = Company.objects.all()
+	companies = Company.objects.filter(is_available=True)
 	buscompanies = BusCompany.objects.all()
-	drivers = Driver.objects.all()
-	itineraries = Itinerary.objects.all().select_related('stretch')
+	drivers = Driver.objects.filter(is_available=True)
+	itineraries = Itinerary.objects.filter(is_enabled=True).select_related('stretch')
 	current_group = None
 	filters = []
 

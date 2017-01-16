@@ -1,10 +1,5 @@
 from django.db import models
 
-SEX_CHOICE = (
-	('m', 'masculino'),
-	('f', 'femenino'),
-)
-
 
 class BusCompany(models.Model):
 	name = models.CharField(max_length=32, verbose_name='nombre')
@@ -19,7 +14,7 @@ class BusCompany(models.Model):
 
 
 class Bus(models.Model):
-	company = models.ForeignKey(BusCompany, verbose_name='empresa')
+	company = models.ForeignKey(BusCompany, on_delete=models.PROTECT, verbose_name='empresa')
 	plate = models.CharField(max_length=6, blank=True, verbose_name='patente')
 	brand = models.CharField(max_length=32, verbose_name='marca')
 	model = models.CharField(max_length=32, verbose_name='modelo')
@@ -41,6 +36,7 @@ class Driver(models.Model):
 	id_string = models.CharField(max_length=16, verbose_name='RUT')
 	names = models.CharField(max_length=32, verbose_name='nombres')
 	surnames = models.CharField(max_length=32, verbose_name='apellidos')
+	is_available = models.BooleanField(default=True, verbose_name='disponible')
 
 	def __str__(self):
 		return self.names.split(' ')[0] + ' ' + self.surnames.split(' ')[0]
@@ -71,6 +67,7 @@ class Destination(models.Model):
 class Stretch(models.Model):
 	description = models.CharField(max_length=64, verbose_name='descripción')
 	destinations = models.ManyToManyField(Destination, through='StretchDestinations')
+	is_enabled = models.BooleanField(default=True, verbose_name='habilitado')
 
 	def __str__(self):
 		return self.description
@@ -86,8 +83,8 @@ class Stretch(models.Model):
 
 
 class StretchDestinations(models.Model):
-	stretch = models.ForeignKey(Stretch)
-	destination = models.ForeignKey(Destination, verbose_name='destino')
+	stretch = models.ForeignKey(Stretch, on_delete=models.CASCADE, verbose_name='tramo')
+	destination = models.ForeignKey(Destination, on_delete=models.CASCADE, verbose_name='destino')
 	position = models.PositiveSmallIntegerField(verbose_name='posición')
 
 	def __str__(self):
@@ -100,9 +97,10 @@ class StretchDestinations(models.Model):
 
 
 class Itinerary(models.Model):
-	stretch = models.ForeignKey(Stretch, verbose_name='tramo')
+	stretch = models.ForeignKey(Stretch, on_delete=models.PROTECT, verbose_name='tramo')
 	app_people = models.IntegerField(verbose_name='PAX')
 	guides = models.IntegerField(verbose_name='guías')
+	is_enabled = models.BooleanField(default=True, verbose_name='habilitado')
 
 	def __str__(self):
 		return "{} ({}+{})".format(self.stretch, self.app_people, self.guides)
@@ -120,6 +118,7 @@ class Company(models.Model):
 	line_of_business = models.CharField(max_length=64, verbose_name='giro')
 	address = models.CharField(max_length=64, verbose_name='dirección')
 	email = models.EmailField(verbose_name='e-mail')
+	is_available = models.BooleanField(default=True, verbose_name='disponible')
 
 	def __str__(self):
 		return self.name
@@ -143,8 +142,9 @@ class IDType(models.Model):
 
 
 class Passenger(models.Model):
+	SEX_CHOICE = (('m', 'masculino'), ('f', 'femenino'),)
 	id_string = models.CharField(max_length=16, verbose_name='identificación')
-	id_type = models.ForeignKey(IDType, verbose_name='tipo de identificación')
+	id_type = models.ForeignKey(IDType, on_delete=models.PROTECT, verbose_name='tipo de identificación')
 	names = models.CharField(max_length=32, verbose_name='nombres')
 	surnames = models.CharField(max_length=32, verbose_name='apellidos')
 	date_of_birth = models.DateField(verbose_name='fecha de nacimiento')
@@ -162,7 +162,7 @@ class Passenger(models.Model):
 class Group(models.Model):
 	id_string = models.CharField(max_length=16, verbose_name='ID')
 	external_id = models.CharField(max_length=16, verbose_name='ID Externo')
-	company = models.ForeignKey(Company, verbose_name='empresa')
+	company = models.ForeignKey(Company, on_delete=models.PROTECT, verbose_name='empresa')
 	debt = models.PositiveIntegerField(verbose_name='deuda')
 	charge = models.PositiveIntegerField(verbose_name='costo')
 	passengers = models.ManyToManyField(Passenger, verbose_name='pasajeros', blank=True)
@@ -177,10 +177,10 @@ class Group(models.Model):
 
 
 class Travel(models.Model):
-	group = models.ForeignKey(Group, verbose_name='grupo')
-	bus = models.ForeignKey(Bus, blank=True, null=True, verbose_name='bus')
-	driver = models.ForeignKey(Driver, blank=True, null=True, verbose_name='chofer')
-	itinerary = models.ForeignKey(Itinerary, verbose_name='itinerario')
+	group = models.ForeignKey(Group, on_delete=models.PROTECT, verbose_name='grupo')
+	bus = models.ForeignKey(Bus, on_delete=models.PROTECT, blank=True, null=True, verbose_name='bus')
+	driver = models.ForeignKey(Driver, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='chofer')
+	itinerary = models.ForeignKey(Itinerary, on_delete=models.PROTECT, verbose_name='itinerario')
 	date = models.DateField(verbose_name='fecha')
 	time = models.TimeField(blank=True, null=True, verbose_name='hora')
 	notes = models.CharField(max_length=128, blank=True, verbose_name='notas')
