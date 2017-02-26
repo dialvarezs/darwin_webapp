@@ -74,7 +74,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 STATIC_URL = '/static/'
 STATIC_ROOT = '/home/valarcon84/webapps/valarcon_static/'
 LOGIN_URL = '/login'

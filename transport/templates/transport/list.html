@@ -1,261 +1,284 @@
-{% extends "base/base.html" %}
+	{% extends "base/base.html" %}
 
-{% load transport_extras %}
+	{% load transport_extras %}
 
-{% block title %} Darwin Transportes {% endblock %}
+	{% block title %} Darwin Transportes {% endblock %}
 
-{% block content %}
+	{% block content %}
 
-	<div class="container">
-		<div class="row">
-			{% block search_nav %}
-			<div class="panel panel-default">
-				<div class="panel-heading" role="button" data-toggle="collapse" data-target="#collapse_filters">
-					<h3 class="panel-title">
-	          Filtro
-		      </h3>
-					<div>
-						{% for filter in filters %}
-							<span class="label label-primary font12">{{ filter }}</span>
-						{% endfor %}
+		<div class="container">
+			<div class="row">
+				{% block search_nav %}
+				<div class="panel panel-default">
+					<div class="panel-heading" role="button" data-toggle="collapse" data-target="#collapse_filters">
+						<h3 class="panel-title">
+		          Filtro
+			      </h3>
+						<div>
+							{% for filter in filters %}
+								<span class="label label-primary font12">{{ filter }}</span>
+							{% endfor %}
+						</div>
 					</div>
-				</div>
-				<div id="collapse_filters" class="panel-collapse collapse">
-					<div class="panel-body">
-						<div class="col-md-8 col-md-offset-2">
-							<form class="form-horizontal" action="{% url 'transport:index'%}" method="GET" role="search">
-								<div class="form-group">
-									<label for="selectGroup" class="col-md-3 control-label">Grupo</label>
-							    <div class="col-md-9">
-							      <select class="form-control selectpicker" id="selectGroup" name="group" data-size="10" data-live-search="true">
-											<option value=0>TODOS</option>
-										{% for group in groups %}
-											<option value={{ group.pk }} {% if request.GET.group|add:0 == group.pk %}selected{% endif %}>{{ group }}</option>
-										{% endfor %}
-										</select>
-							    </div>
-								</div>
-								<div class="form-group">
-									<label for="selectBusCompany" class="col-md-3 control-label">Empresa (Transporte)</label>
-									<div class="col-md-9">
-										<select class="form-control selectpicker" id="selectBusCompany" name="buscompany" data-size="10" data-live-search="true">
-											<option value=0>TODAS</option>
-											{% for buscompany in buscompanies %}
-												<option value={{ buscompany.pk }} {% if request.GET.buscompany|add:0 == buscompany.pk %}selected{% endif %}>{{ buscompany }}</option>
+					<div id="collapse_filters" class="panel-collapse collapse">
+						<div class="panel-body">
+							<div class="col-md-8 col-md-offset-2">
+								<form class="form-horizontal" action="{% url 'transport:index' %}" method="GET" role="search">
+									<div class="form-group">
+										<label for="selectGroup" class="col-md-3 control-label">Grupo</label>
+								    <div class="col-md-9">
+								      <select class="form-control selectpicker" id="selectGroup" name="group" data-size="10" data-live-search="true">
+												<option value=0>TODOS</option>
+											{% for group in groups %}
+												<option value={{ group.pk }} {% if request.GET.group|add:0 == group.pk %}selected{% endif %}>{{ group }}</option>
 											{% endfor %}
-										</select>
+											</select>
+								    </div>
 									</div>
-								</div>
-								<div class="form-group">
-									<label for="selectCompany" class="col-md-3 control-label">Empresa (Turismo)</label>
-									<div class="col-md-9">
-										<select class="form-control selectpicker" id="selectCompany" name="company" data-size="10" data-live-search="true">
-											<option value=0>TODAS</option>
-											{% for company in companies %}
-												<option value={{ company.pk }} {% if request.GET.company|add:0 == company.pk %}selected{% endif %}>{{ company }}</option>
-											{% endfor %}
-										</select>
-									</div>
-								</div>
-								<div class="form-group">
-									<label for="selectDriver" class="col-md-3 control-label">Chofer</label>
-									<div class="col-md-9">
-										<select class="form-control selectpicker" id="selectDriver" name="driver" data-size="10" data-live-search="true">
-											<option value=0>TODOS</option>
-										{% for driver in drivers %}
-											<option value={{ driver.pk }} {% if request.GET.driver|add:0 == driver.pk %}selected{% endif %}>{{ driver }}</option>
-										{% endfor %}
-										</select>
-									</div>
-								</div>
-								<div class="form-group">
-									{% block dategroup_3 %}
-										<label for="selectDates" class="col-md-3 control-label">Fechas</label>
-										<div class="col-md-9" id="selectDates">
-											<div class="col-md-6 nopadding">
-												<input type="date" class="form-control" id="inputDateFrom" name="date_from"
-												       value={% if request.GET.date_from %}{{request.GET.date_from}}{% else %}{% now 'Y-m-d'%}{% endif %}>
-											</div>
-											<div class="col-md-6 nopadding">
-												<input type="date" class="form-control" id="inputDateTo" name="date_to"
-												       value={% if request.GET.date_to %}{{request.GET.date_to}}{% else %}""{% endif %}>
-											</div>
+									<div class="form-group">
+										<label for="selectBusCompany" class="col-md-3 control-label">Empresa (Transporte)</label>
+										<div class="col-md-9">
+											<select class="form-control selectpicker" id="selectBusCompany" name="buscompany" data-size="10" data-live-search="true">
+												<option value=0>TODAS</option>
+												{% for buscompany in buscompanies %}
+													<option value={{ buscompany.pk }} {% if request.GET.buscompany|add:0 == buscompany.pk %}selected{% endif %}>{{ buscompany }}</option>
+												{% endfor %}
+											</select>
 										</div>
-									{% endblock %}
-								</div>
-								<div class="text-right">
-									{% if filters %}
-										<a href="{% url 'transport:index' %}" class="btn btn-danger" role="button">
-											Anular Filtro
-										</a>
-									{% endif %}
-									<button type="submit" class="btn btn-primary">
-										Filtrar
-									</button>
-								</div>
-							</form>
+									</div>
+									<div class="form-group">
+										<label for="selectCompany" class="col-md-3 control-label">Empresa (Turismo)</label>
+										<div class="col-md-9">
+											<select class="form-control selectpicker" id="selectCompany" name="company" data-size="10" data-live-search="true">
+												<option value=0>TODAS</option>
+												{% for company in companies %}
+													<option value={{ company.pk }} {% if request.GET.company|add:0 == company.pk %}selected{% endif %}>{{ company }}</option>
+												{% endfor %}
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="selectDriver" class="col-md-3 control-label">Chofer</label>
+										<div class="col-md-9">
+											<select class="form-control selectpicker" id="selectDriver" name="driver" data-size="10" data-live-search="true">
+												<option value=0>TODOS</option>
+											{% for driver in drivers %}
+												<option value={{ driver.pk }} {% if request.GET.driver|add:0 == driver.pk %}selected{% endif %}>{{ driver }}</option>
+											{% endfor %}
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										{% block dategroup_3 %}
+											<label for="selectDates" class="col-md-3 control-label">Fechas</label>
+											<div class="col-md-9" id="selectDates">
+												<div class="col-md-6 nopadding">
+													<input type="date" class="form-control" id="inputDateFrom" name="date_from"
+													       value={% if request.GET.date_from %}{{ request.GET.date_from }}{% else %}{% now 'Y-m-d'%}{% endif %}>
+												</div>
+												<div class="col-md-6 nopadding">
+													<input type="date" class="form-control" id="inputDateTo" name="date_to"
+													       value={% if request.GET.date_to %}{{ request.GET.date_to }}{% else %}""{% endif %}>
+												</div>
+											</div>
+										{% endblock %}
+									</div>
+									<div class="text-right">
+										{% if filters %}
+											<a href="{% url 'transport:index' %}" class="btn btn-danger" role="button">
+												Anular Filtro
+											</a>
+										{% endif %}
+										<button type="submit" class="btn btn-primary">
+											Filtrar
+										</button>
+									</div>
+								</form>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 
-			{% block nav_extra %}
-				{% if request.GET.group|add:0 > 0 %}
-					<nav class="navbar navbar-default">
-						<div class="container">
-							<div class="navbar-header">
-								<span class="navbar-brand">Grupo {{current_group}}</span>
+				{% block nav_extra %}
+					{% if request.GET.group|add:0 > 0 %}
+						<nav class="navbar navbar-default">
+							<div class="container">
+								<div class="navbar-header">
+									<span class="navbar-brand">Grupo {{ current_group }}</span>
+								</div>
+								<ul class="nav navbar-nav navbar-right">
+									<li>
+										<a href="#" type="button" data-toggle="modal" data-target="#groupModal" role="button">
+											<span class="glyphicon glyphicon-info-sign"></span> <strong>Detalles</strong>
+										</a>
+									</li>
+								</ul>
 							</div>
-							<ul class="nav navbar-nav navbar-right">
-								<li>
-									<a href="#" type="button" data-toggle="modal" data-target="#groupModal" role="button">
-										<span class="glyphicon glyphicon-info-sign"></span> <strong>Detalles</strong>
-									</a>
-								</li>
-							</ul>
-						</div>
-						{% include "transport/group_modal.html" %}
-					</nav>
-				{% endif %}
-			{% endblock %}
-			{% endblock %}
-		</div>
-		<div class="row">
-			<p class="text-right">
-				<a class="btn btn-default" href="#" data-toggle="modal" data-target="#travelModal0">
-					<span class="glyphicon glyphicon-plus"></span> Nuevo
-				</a>
-				{% block btn_print %}
-				<a class="btn btn-default" target="_blank" href="{% url 'transport:travel_pdf' %}?date_from={% now 'Y-m-d' %}">
-					<span class="glyphicon glyphicon-print"></span> Imprimir
-				</a>
+							{% include "transport/group_modal.html" %}
+						</nav>
+					{% endif %}
 				{% endblock %}
-			</p>
-			{% include "transport/travel_modal_new.html" %}
-		</div>
-		<div class="row">
-			<div class="table-responsive">
-				<table class="table">
-					<tr>
-						<th>Viaje</th>
-						<th>Grupo</th>
-						<th>Bus</th>
-						<th>Chofer</th>
-						<th>Empresa</th>
-						<th>Tramo</th>
-						<th>PAX</th>
-						<th>Fecha</th>
-						<th>Hora</th>
-						<th></th>
-						<th></th>
-					</tr>
-					{% for travel in travels %}
-					<tr {% ifchanged travel.date %}class="doubleline"{% endifchanged %}>
-						<td>{{ travel.pk|stringformat:"05d" }}</td>
-						<td>
-							<a href="{% url 'transport:index' %}?group={{travel.group.pk}}&date_from={% now "Y-m-d" %}">{{ travel.group }}</a>
-							{% if travel.group.debt|add:0 > 0 %} <span class="glyphicon glyphicon-credit-card" style="color: red"></span>{% endif %}
-						</td>
-						<td>{% if travel.bus %}{{ travel.bus }}{% else %}-----{% endif %}</td>
-						<td>
-							{% if travel.driver %}
-								<a href="{% url 'transport:index' %}?driver={{travel.driver.pk}}&date_from={% now "Y-m-d" %}">{{ travel.driver }}</a>
-							{% else %}-----{% endif %}
-						</td>
-						<td>{% if travel.bus %}<a href="{% url 'transport:index' %}?buscompany={{travel.bus.company.pk}}&date_from={% now "Y-m-d" %}">{{ travel.bus.company }}</a>
-							{% else %}-----{% endif %}
-						</td>
-						<td>{{ travel.itinerary.stretch }}</td>
-						<td>{{ travel.itinerary.app_people }}+{{travel.itinerary.guides}}</td>
-						<td>{{ travel.date }}</td>
-						<td>{% if travel.time %}{{ travel.time }}{% else %}--:--{% endif %}</td>
-						<td>{% if travel.notes %}<span class="glyphicon glyphicon glyphicon-info-sign">{% endif %}</td>
-						<td class="text-center">
-							<a href="#" data-toggle="modal" data-target="#travelModal{{travel.pk}}" role="button">
-								<span class="glyphicon glyphicon glyphicon-edit" style="font-size: 20px;"></span>
+				{% endblock %}
+			</div>
+{#			<div class="row" id="messages" style="position: fixed;">#}
+{#        <div id="inner-message" class="alert alert-success alert-dismissible">#}
+{#          <button type="button" class="close" data-dismiss="alert">&times;</button>#}
+{#          test error message#}
+{#        </div>#}
+{#			</div>#}
+			<div class="row">
+				<p class="text-right">
+					<a class="btn btn-default" href="#" data-toggle="modal" data-target="#travelModal0">
+						<span class="glyphicon glyphicon-plus"></span> Nuevo
+					</a>
+					{% block btn_print %}
+					<a class="btn btn-default" target="_blank" href="{% url 'transport:travel_pdf' %}?{% url_remove 'page' %}">
+						<span class="glyphicon glyphicon-print"></span> Imprimir
+					</a>
+					{% endblock %}
+				</p>
+				{% include "transport/travel_modal_new.html" %}
+			</div>
+			<div class="row">
+				<div class="table-responsive">
+					<table class="table">
+						<tr>
+							<th>Viaje</th>
+							<th>Grupo</th>
+							<th>Bus</th>
+							<th>Chofer</th>
+							<th>Empresa</th>
+							<th>Tramo</th>
+							<th>PAX</th>
+							<th>Fecha</th>
+							<th>Hora</th>
+							<th></th>
+							<th></th>
+						</tr>
+						{% for travel in travels %}
+						<tr {% ifchanged travel.date %}class="doubleline"{% endifchanged %}>
+							<td>{{ travel.pk|stringformat:"05d" }}</td>
+							<td>
+								<a href="{% url 'transport:index' %}?group={{ travel.group.pk }}&date_from={% now "Y-m-d" %}">{{ travel.group }}</a>
+								{% if travel.group.debt|add:0 > 0 %}
+									<span class="glyphicon glyphicon-credit-card" style="color: red"></span>
+								{% elif travel.group.is_paid %}
+									<span class="glyphicon glyphicon-credit-card" style="color: green"></span>
+								{% endif %}
+							</td>
+							<td>{% if travel.bus %}{{ travel.bus }}{% else %}-----{% endif %}</td>
+							<td>
+								{% if travel.driver %}
+									<a href="{% url 'transport:index' %}?driver={{ travel.driver.pk }}&date_from={% now "Y-m-d" %}">{{ travel.driver }}</a>
+								{% else %}-----{% endif %}
+							</td>
+							<td>{% if travel.bus %}<a href="{% url 'transport:index' %}?buscompany={{ travel.bus.company.pk }}&date_from={% now "Y-m-d" %}">{{ travel.bus.company }}</a>
+								{% else %}-----{% endif %}
+							</td>
+							<td>{{ travel.itinerary.stretch }}</td>
+							<td>{{ travel.itinerary.app_people }}+{{travel.itinerary.guides}}</td>
+							<td>{{ travel.date }}</td>
+							<td>{% if travel.time %}{{ travel.time }}{% else %}--:--{% endif %}</td>
+							<td>{% if travel.notes %}<span class="glyphicon glyphicon glyphicon-info-sign"></span>{% endif %}</td>
+							<td class="text-center">
+								<a href="#" data-toggle="modal" data-target="#travelModal{{ travel.pk }}" role="button">
+									<span class="glyphicon glyphicon glyphicon-edit" style="font-size: 20px;"></span>
+								</a>
+							</td>
+						</tr>
+						{% endfor %}
+					</table>
+				{% for travel in travels %}
+					{% include "transport/travel_modal.html" %}
+				{% endfor %}
+				</div>
+			{% if travels.paginator.num_pages > 1 %}
+				<div class="row text-center">
+					<ul class="pagination">
+						<li {% if not travels.has_previous %}class="disabled"{% endif %}>
+							<a {% if travels.has_previous %}href="?{% url_replace 'page' travels.previous_page_number %}"{% endif %}>
+								<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
 							</a>
-						</td>
-						{% include "transport/travel_modal.html" %}
-					</tr>
-					{% endfor %}
-				</table>
-			</div>
-			<div class="row text-center">
-				<ul class="pagination">
-					<li {% if not travels.has_previous %}class="disabled"{%endif%}>
-						<a {%if travels.has_previous%}href="?{% url_replace 'page' travels.previous_page_number %}"{%endif%}>
-							<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
-						</a>
-					</li>
-					{% for i in travels.paginator.num_pages|pages:travels.number %}
-					<li {%if travels.number == i %}class="active"{%endif%}>
-						<a href="?{% url_replace 'page' i %}">{{i}}</a>
-					</li>
-					{% endfor %}
-					<li {% if not travels.has_next %}class="disabled"{%endif%}>
-						<a {%if travels.has_next%}href="?{% url_replace 'page' travels.next_page_number %}"{%endif%}>
-							<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
-						</a>
-					</li>
-				</ul>
+						</li>
+						{% for i in travels.paginator.num_pages|pages:travels.number %}
+						<li {%if travels.number == i %}class="active"{% endif %}>
+							<a href="?{% url_replace 'page' i %}">{{i}}</a>
+						</li>
+						{% endfor %}
+						<li {% if not travels.has_next %}class="disabled"{% endif %}>
+							<a {% if travels.has_next %}href="?{% url_replace 'page' travels.next_page_number %}"{% endif %}>
+								<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			{% endif %}
 			</div>
 		</div>
-	</div>
 
-{% endblock %}
+	{% endblock %}
 
-{% block scripts %}
-	<script>
-		$(function(){
-	    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
-			  $('.selectpicker').selectpicker('mobile');
-			}
+	{% block scripts %}
+		<script>
+			$(function(){
+		    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
+				  $('.selectpicker').selectpicker('mobile');
+				}
 
-			{% if current_group %}
-				$('#groupFormSubmit').click(function(event){
+				{% if current_group %}
+					$('#groupFormSubmit').click(function(event){
+					  event.preventDefault();
+						$.ajax({
+							url: "{% url 'transport:group_save' current_group.pk %}",
+							type: "POST",
+							data: $('#groupForm').serialize(),
+							success: function(){
+								toastr.success("Grupo {{ current_group.pk }} modificado correctamente.")
+							},
+							error: function(xhr) {
+								toastr.error("Error al modificar grupo {{ current_group.pk }}: " + xhr.responseJSON.message)
+              }
+						});
+						$('#groupModal').modal('hide');
+					});
+				{% endif %}
+
+				$('#travelForm0Submit').click(function(event){
 				  event.preventDefault();
 					$.ajax({
-						url: "{% url 'transport:group_save' current_group.id %}",
+						url: "{% url 'transport:travel_new' %}",
 						type: "POST",
-						data: $('#groupForm').serialize(),
-						success: function(data){
-							location.reload();
-						}
+						data: $('#travelForm0').serialize(),
+						success: function(){
+							toastr.success("Viaje creado correctamente. Se verá reflejado en la lista al recargar la página.")
+						},
+						error: function(xhr) {
+							toastr.error("Error al crear nuevo viaje: " + xhr.responseJSON.message)
+            }
 					});
-					$('#groupModal').modal('hide');
+					$('#travelModal0').modal('hide');
 				});
-			{% endif %}
 
-			$('#travelForm0Submit').click(function(event){
-			  event.preventDefault();
-				$.ajax({
-					url: "{% url 'transport:travel_new' %}",
-					type: "POST",
-					data: $('#travelForm0').serialize(),
-					success: function(data){
-						location.reload();
-					}
+				{% for travel in travels %}
+				$('#travelForm{{ travel.pk }}Submit').click(function(event){
+				  event.preventDefault();
+					$.ajax({
+						url: "{% url 'transport:travel_save' travel.pk %}",
+						type: "POST",
+						data: $('#travelForm{{ travel.pk }}').serialize(),
+						success: function(){
+							toastr.success("Viaje {{ travel.pk }} modificado correctamente. Los cambios se verán reflejados al recargar la página.")
+						},
+						error: function(xhr) {
+								toastr.error("Error al modificar viaje {{ travel.pk }}: " + xhr.responseJSON.message)
+            }
+					});
+					$('#travelModal{{ travel.pk }}').modal('hide');
 				});
-				$('#travelModal0').modal('hide');
+				{% endfor %}
 			});
+		</script>
 
-			{% for travel in travels %}
-			$('#travelForm{{ travel.id }}Submit').click(function(event){
-			  event.preventDefault();
-				$.ajax({
-					url: "{% url 'transport:travel_save' travel.id %}",
-					type: "POST",
-					data: $('#travelForm{{ travel.id }}').serialize(),
-					success: function(data){
-						location.reload();
-					}
-				});
-				$('#travelModal{{ travel.id }}').modal('hide');
-			});
-			{% endfor %}
-		});
-	</script>
-
-{% block aditional_scripts %}
-{% endblock %}
-{% endblock %}
+	{% block aditional_scripts %}
+	{% endblock %}
+	{% endblock %}

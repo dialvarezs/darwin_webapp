@@ -10,6 +10,14 @@ def url_replace(context, field, value):
 	return dict_.urlencode()
 
 
+@register.simple_tag(takes_context=True)
+def url_remove(context, field):
+	dict_ = context['request'].GET.copy()
+	if field in dict_:
+		del dict_[field]
+	return dict_.urlencode()
+
+
 @register.filter(name='pages')
 def paginator(pages, current, num=8):
 	if num >= pages:

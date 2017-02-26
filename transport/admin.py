@@ -108,7 +108,8 @@ class MyCompanyAdminForm(forms.ModelForm):
 
 class CompanyAdmin(admin.ModelAdmin):
 	form = MyCompanyAdminForm
-	list_display = ['short_name', 'id_string', 'name', 'email']
+	list_display = ['short_name', 'id_string', 'name', 'email', 'is_available']
+	list_filter = ['is_available']
 	actions = ['make_unavailable']
 
 	def make_unavailable(self, request, queryset):
@@ -118,8 +119,9 @@ class CompanyAdmin(admin.ModelAdmin):
 
 class GroupAdmin(admin.ModelAdmin):
 	filter_vertical = ['passengers']
-	list_display = ['id_string', 'external_id', 'company', 'charge', 'debt']
-	list_filter = ['company']
+	list_display = ['id_string', 'external_id', 'company', 'charge', 'debt', 'is_enabled']
+	list_filter = ['company', 'is_enabled']
+	actions = ['make_disabled']
 
 	def get_form(self, request, obj=None, **kwargs):
 		form = super(GroupAdmin, self).get_form(request, obj, **kwargs)
@@ -133,7 +135,7 @@ class GroupAdmin(admin.ModelAdmin):
 
 	def make_disabled(self, request, queryset):
 		queryset.update(is_enabled=False)
-	make_disabled.short_description = "Deshabilitar itinerarios seleccionados"
+	make_disabled.short_description = "Deshabilitar grupos seleccionados"
 
 
 class TravelAdmin(admin.ModelAdmin):
@@ -154,7 +156,7 @@ class TravelAdmin(admin.ModelAdmin):
 		if db_field.name == 'itinerary':
 			kwargs['queryset'] = Itinerary.objects.filter(is_enabled=True)
 		if db_field.name == 'group':
-			kwargs['queryset'] = Group.objects.filter(id_string__startswith=utils.current_season())
+			kwargs['queryset'] = Group.objects.filter(is_enabled=True)
 		return super(TravelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 

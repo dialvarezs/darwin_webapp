@@ -1,5 +1,6 @@
 body {
 	font-family: "Roboto" !important;
+	padding-top: 70px;
 }
 
 table {
@@ -22,10 +23,39 @@ tr.doubleline {
 	padding: 0px;
 }
 
+.nopadding-left {
+	padding-left: 0px;
+}
+
 .nopadding-right {
 	padding-right: 0px;
 }
 
 .font12 {
 	font-size: 12px;
+}
+
+span.removeicon {
+	color: #d43f3a;
+	font-size: 18px;
+	padding-top: 8px;
+	padding-left: 8px;
+}
+
+span.addicon {
+	color: #337ab7;
+	font-size: 18px;
+	padding-top: 8px;
+	padding-left: 8px;
+}
+
+span.addicon-nopadding {
+	color: #337ab7;
+	font-size: 18px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+hr.tablerule {
+	margin-bottom: 5px;
 }

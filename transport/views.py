@@ -6,16 +6,16 @@ from django.contrib.auth.decorators import login_required
 
 from io import BytesIO
 from datetime import datetime
+import json
 
 from .models import Travel, Group, Bus, BusCompany, Driver, Itinerary, Company
-from .utils import current_season
 from .pdf_print import DocumentBuilder
 
 
 @login_required
 def travel_list(request):
 	travels = Travel.objects.all().select_related('group', 'bus', 'bus__company', 'itinerary', 'itinerary__stretch', 'driver')
-	groups = Group.objects.filter(id_string__startswith=current_season())
+	groups = Group.objects.filter(is_enabled=True)
 	busses = Bus.objects.filter(is_available=True).select_related('company')
 	companies = Company.objects.filter(is_available=True)
 	buscompanies = BusCompany.objects.all()
@@ -46,7 +46,7 @@ def travel_list(request):
 	if date_from and date_to:
 		travels = travels.filter(date__range=[date_from, date_to])
 		filters.append("Fechas: {} - {}".format(datetime.strptime(date_from, '%Y-%m-%d').strftime('%d/%d/%y'),
-						datetime.strptime(date_to, '%Y-%m-%d').strftime('%d/%d/%y')))
+			datetime.strptime(date_to, '%Y-%m-%d').strftime('%d/%d/%y')))
 	elif date_from:
 		travels = travels.exclude(date__lt=date_from)
 		filters.append("Fechas: {} - // ".format(datetime.strptime(date_from, '%Y-%m-%d').strftime('%d/%d/%y')))
@@ -79,8 +79,8 @@ def travel_save(request, travel_id=None):
 		date_field = request.POST['date']
 		time_field = request.POST['time']
 		notes = request.POST['notes']
-	except:
-		pass
+	except KeyError as e:
+		return __bad_request(str(e))
 	else:
 		if travel_id:
 			t = get_object_or_404(Travel, pk=travel_id)
@@ -91,11 +91,15 @@ def travel_save(request, travel_id=None):
 		t.driver = driver
 		t.itinerary = itinerary
 		t.date = date_field
-		t.time = time_field
+		t.time = time_field if time_field != '' else None
 		t.notes = notes
-		t.save()
 
-	return HttpResponseRedirect(reverse('transport:index'))
+	try:
+		t.save()
+	except Exception as e:
+		return __bad_request(str(e))
+	else:
+		return HttpResponseRedirect(reverse('transport:index'))
 
 
 @login_required
@@ -107,20 +111,24 @@ def group_save(request, group_id):
 		external_id = request.POST['external_id']
 		company = Company.objects.get(pk=request.POST['company'])
 		charge = request.POST['charge']
-		debt = request.POST['debt']
-		if debt == '':
-			debt = '0'
-	except:
-		pass
+		debt = request.POST['debt'] if request.POST['debt'] != '' else '0'
+		paid = 'paid' in request.POST
+	except KeyError as e:
+		return __bad_request(str(e))
 	else:
 		g.id_string = id_string
 		g.external_id = external_id
 		g.company = company
 		g.charge = charge
 		g.debt = debt
-		g.save()
+		g.is_paid = paid
 
-	return HttpResponseRedirect(reverse('transport:index'))
+	try:
+		g.save()
+	except Exception as e:
+		return __bad_request(str(e))
+	else:
+		return HttpResponseRedirect(reverse('transport:index'))
 
 
 @login_required
@@ -168,7 +176,7 @@ def travel_pdf(request):
 		info_raw += ("Fechas: TODAS",)
 
 	response = HttpResponse(content_type='application/pdf')
-	response['Content-Disposition'] = 'inline; filename='+"travel_list.pdf"
+	response['Content-Disposition'] = 'inline; filename=' + "travel_list.pdf"
 
 	buffer = BytesIO()
 	pdf = DocumentBuilder(buffer).travel_list([info_raw], travels)
@@ -186,3 +194,10 @@ def __pagination(objects, number, page):
 		return paginator.page(1)
 	except EmptyPage:
 		return paginator.page(paginator.num_pages)
+
+
+def __bad_request(message):
+	response = HttpResponse(json.dumps({'message': message}),
+		content_type='application/json')
+	response.status_code = 400
+	return response

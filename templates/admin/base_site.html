@@ -12,8 +12,8 @@
 {% block branding %}
 	<span class="navbar-brand">Victor Alarcón</span>
 	<ul class="nav navbar-nav">
-		<li class="{% if nbar == 'transport' %}active{% endif %}"><a href="{% url 'transport:index' %}">Transportes</a></li>
-		<li class="{% if nbar == 'equipment_leasing' %}active{% endif %}"><a href="{% url 'equipment_leasing:index' %}">Arriendo de Equipos</a></li>
+		<li><a href="{% url 'transport:index' %}">Darwin</a></li>
+		<li><a href="{% url 'equipment_rental:index' %}">Camaleón</a></li>
 		<li class="{% if '/admin/' in request.path %}active{% endif %}"><a href="{% url 'admin:index' %}">Administración</a></li>
 	</ul>
 {% endblock %}

@@ -165,6 +165,8 @@ class Group(models.Model):
 	company = models.ForeignKey(Company, on_delete=models.PROTECT, verbose_name='empresa')
 	debt = models.PositiveIntegerField(verbose_name='deuda')
 	charge = models.PositiveIntegerField(verbose_name='costo')
+	is_enabled = models.BooleanField(default=True, verbose_name='habilitado')
+	is_paid = models.BooleanField(default=False, verbose_name='pagado')
 	passengers = models.ManyToManyField(Passenger, verbose_name='pasajeros', blank=True)
 
 	def __str__(self):

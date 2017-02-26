@@ -70,6 +70,17 @@ class DocumentBuilder:
 		self._title = "Listado de Viajes"
 		self._logo_path = "static/resources/img/logo-darwin-mini.png"
 
+		table_style = [('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+						('FONTSIZE', (0, 0), (-1, -1), 9),
+						('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
+						('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
+						('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+						('ALIGN', (0, 1), (1, -1), 'RIGHT'),
+						('ALIGN', (1, 1), (4, -1), 'CENTER'),
+						('ALIGN', (-2, 1), (-1, -1), 'RIGHT'),
+						('VALIGN', (0, 0), (-1, -1), 'TOP'),]
+
+		i = 0
 		data = [('Viaje', 'Grupo', 'Bus', 'Empresa', 'Conductor', 'Itinerario', 'Fecha', 'Hora', 'Notas')]
 		for travel in travels:
 			row = (str(travel.pk).zfill(4), Paragraph(travel.group.__str__(), self._styles["BodyText"]))
@@ -83,28 +94,22 @@ class DocumentBuilder:
 				row += ("-----",)
 			row += (Paragraph(travel.itinerary.__str__(), self._styles["BodyText"]),)
 			row += (travel.date.strftime("%d/%m/%Y"),)
+			if i > 0 and (travels[i].date != travels[i-1].date):
+				table_style += ('LINEBELOW', (0, i), (-1, i), 0.5, colors.black),
 			if travel.time:
 				row += (travel.time.strftime("%H:%M"),)
 			else:
 				row += ("--:--",)
 			row += (Paragraph(travel.notes, self._styles["BodyText"]),)
 
-			data.append(row)
+			data += [row]
+			i += 1
 
 		info_table = Table(info)
 		info_table.setStyle(TableStyle([('FONTNAME', (0,0), (-1,-1), 'Helvetica-Bold')]))
 
 		data_table = Table(data, colWidths=(None, 3*cm, None, None, None, 5*cm, None, 1*cm, 6*cm), repeatRows=1)
-		data_table.setStyle(TableStyle([('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-										('FONTSIZE', (0, 0), (-1, -1), 9),
-										('LINEABOVE', (0,0), (-1,0), 1, colors.black),
-										('LINEBELOW', (0,0), (-1,0), 1, colors.black),
-										('ALIGN', (0,0), (-1,0), 'CENTER'),
-										('ALIGN', (0,1), (1,-1), 'RIGHT'),
-										('ALIGN', (1,1), (4,-1), 'CENTER'),
-										('ALIGN', (-2,1), (-1,-1), 'RIGHT'),
-										('VALIGN', (0,0), (-1, -1), 'TOP'),
-										]))
+		data_table.setStyle(TableStyle(table_style))
 
 		space = Spacer(width=0, height=cm)
 
