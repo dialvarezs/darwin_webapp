@@ -1,0 +1,137 @@
+{% load equipmentrental_extras %}
+<!-- Modal -->
+<div id="leaseModal0" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+	<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Nuevo Préstamo</h4>
+			</div>
+			<div class="modal-body">
+				<form id="leaseForm0" action="{% url 'equipment_rental:lease_new' %}" method="post">
+				{% csrf_token %}
+					<div class="form-group">
+						<label for="clientGroup">Cliente</label>
+						<div class="input-group" id="clientGroup">
+							<select class="form-control selectpicker" id="clientSelect" name="client" data-size="15" data-live-search="true">
+								{% for client in clients %}
+									<option value={{ client.pk }}>{{ client }}</option>
+								{% endfor %}
+							</select>
+							<div class="input-group-btn">
+								<a class="btn btn-default" href="{% url 'admin:equipment_rental_client_add' %}">
+									<span class="glyphicon glyphicon-plus addicon-nopadding"></span>
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="dateInput">Fecha de devolución</label>
+						{% now "Y-m-d" as today %}
+						<input id="dateInput" type='date' class="form-control" name="return_date" value="{{ today|moredays:1 }}" placeholder="dd/mm/aaaa" required/>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="col-md-9 col-sm-9 col-xs-9 nopadding"><strong>Equipamiento</strong></div>
+								<div class="col-md-2 col-sm-2 col-xs-2 nopadding"><strong>Cantidad</strong></div>
+								<div class="col-md-1 col-sm-1 col-xs-1 nopadding"></div>
+							</div>
+						</div>
+						<select class="hidden" id="lease_prices">
+							{% for equipment in equipments %}
+								<option value={{ equipment.pk }}>{{ equipment.lease_price }}</option>
+							{% endfor %}
+						</select>
+						<div id="equipments_list">
+							<div class="row" id="eq_row">
+								<div class="col-md-12">
+									<div class="col-md-9 col-sm-9 col-xs-9 nopadding">
+										<select class="form-control" name="equipments_select[]">
+											{% for equipment in equipments %}
+												<option value={{ equipment.pk }}>{{ equipment }} (${{ equipment.lease_price }}) [{{ equipment.stock|substract:equipment.stock_leased }}]</option>
+											{% endfor %}
+										</select>
+									</div>
+									<div class="col-md-2 col-sm-2 col-xs-2 nopadding">
+										<input class="form-control" type="number" min="1" name="equipments_quantity[]">
+									</div>
+									<div class="col-md-1 col-sm-1 col-xs-1 nopadding">
+										<span class="glyphicon glyphicon-remove removeicon del_equipment"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<span class="glyphicon glyphicon-plus addicon" id="add_equipment"></span>
+					</div>
+					<div class="form-group">
+						<label for="priceGroup">Precio Total</label>
+						<div class="input-group" id="priceGroup">
+							<span class="input-group-addon"><span class="glyphicon glyphicon-usd"></span></span>
+							<input type="number" class="form-control text-right" id="total_price" name="cost" readonly="readonly"/>
+							<div class="input-group-btn">
+								<span id="get_total_price" class="btn btn-default">Calcular</span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="paymentGroup">Valor Pagado</label>
+						<div class="input-group" id="paymentGroup">
+							<span class="input-group-addon"><span class="glyphicon glyphicon-usd"></span></span>
+							<input class="form-control text-right" type="number" id="paymentInput" name="payment" required/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="notesText">Notas</label>
+						<textarea class="form-control" id="notesText" name="notes" maxlength="256"></textarea>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="submit" class="btn btn-primary" value="submit" id="leaseForm0Submit"><i class="glyphicon glyphicon-save"></i> Registrar Préstamo</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> Cancelar</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% block aditional_scripts %}
+	<script>
+		$(function() {
+			$(document).on('click', '.del_equipment', function(){
+			    if($(this).parent().parent().parent().parent().children().length > 1) {
+			        $(this).parent().parent().parent().remove();
+	        }
+			});
+			$('#add_equipment').click(function(){
+			    var $neweq = $("#eq_row").clone();
+					$neweq.children().eq(0).children().eq(1).children().eq(0).val("");
+					$("#equipments_list").append($neweq);
+			});
+			$('#leaseForm0Submit').click(function(event){
+		    $('#get_total_price').click();
+			  event.preventDefault();
+				$.ajax({
+					url: "{% url 'equipment_rental:lease_new' %}",
+					type: "POST",
+					data: $('#leaseForm0').serialize(),
+					success: function(data){
+						location.reload();
+					}
+				});
+				$('#leaseModal0').modal('hide');
+			});
+			$('#get_total_price').click(function(){
+			    var days = Math.ceil((new Date($('#dateInput').val()) - new Date()) / 86400000);
+			    var price = 0;
+			    $.each($('#equipments_list > >'), function(index, ediv){
+			        var epk = $(ediv).find('select > option:selected').val();
+					    var eqt = $(ediv).find('input').val();
+					    price += $('#lease_prices > option[value='+epk+']').text() * eqt;
+			    });
+			    price *= days;
+		      $('#total_price').val(price);
+			});
+		});
+	</script>
+{% endblock %}

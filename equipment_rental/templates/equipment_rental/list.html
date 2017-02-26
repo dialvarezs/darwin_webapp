@@ -1,0 +1,96 @@
+{% extends "base/base.html" %}
+
+{% load equipmentrental_extras %}
+
+{% block title %} Camaleón Arriendo de Equipamiento {% endblock %}
+
+{% block content %}
+
+	<div class="container">
+		<div class="row">
+			<p class="text-right">
+				<a class="btn btn-default" href="#" data-toggle="modal" data-target="#leaseModal0">
+					<span class="glyphicon glyphicon-plus"></span> Nuevo
+				</a>
+				{% block btn_print %}
+{#				<a class="btn btn-default" target="_blank" href="{% url 'transport:travel_pdf' %}?date_from={% now 'Y-m-d' %}">#}
+{#					<span class="glyphicon glyphicon-print"></span> Imprimir#}
+{#				</a>#}
+				{% endblock %}
+			</p>
+			{% include "equipment_rental/lease_modal_new.html" %}
+		</div>
+		<div class="row">
+			<div class="table-responsive">
+				<table class="table">
+					<tr>
+						<th>Préstamo</th>
+						<th>Cliente</th>
+						<th>Registro</th>
+						<th>Fecha Devolución</th>
+						<th>Equipamientos</th>
+						<th></th>
+						<th></th>
+					</tr>
+					{% now "Y-m-d" as today %}
+					{% for lease in leases %}
+						{% with lease.return_date|date:'Y-m-d' as return_date %}
+							<tr class="{% if return_date < today %} danger {% elif return_date == today %} warning {% endif %}">
+								<td>{{ lease.pk|stringformat:"05d" }}</td>
+								<td>{{ lease.client }}</td>
+								<td>{{ lease.lease_record }}</td>
+								<td>{{ lease.return_date }}</td>
+								<td>{{ lease.equipments_str }}</td>
+								{% if not lease.returned %}
+									<td class="text-center">
+										<a href="#" data-toggle="modal" data-target="#leaseModal{{ lease.pk }}" role="button">
+											<span class="glyphicon glyphicon glyphicon glyphicon-log-in" style="font-size: 20px;"></span>
+										</a>
+									</td>
+								{% endif %}
+							</tr>
+						{% endwith %}
+					{% endfor %}
+				</table>
+			</div>
+		{% for lease in leases %}
+			{% include "equipment_rental/lease_modal_return.html" %}
+		{% endfor %}
+		{% if travels.paginator.num_pages > 1 %}
+			<div class="row text-center">
+				<ul class="pagination">
+					<li {% if not leases.has_previous %}class="disabled"{% endif %}>
+						<a {%if leases.has_previous%}href="?{% url_replace 'page' leases.previous_page_number %}"{% endif %}>
+							<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+						</a>
+					</li>
+					{% for i in leases.paginator.num_pages|pages:leases.number %}
+					<li {%if leases.number == i %}class="active"{% endif %}>
+						<a href="?{% url_replace 'page' i %}">{{ i }}</a>
+					</li>
+					{% endfor %}
+					<li {% if not leases.has_next %}class="disabled"{% endif %}>
+						<a {%if leases.has_next%}href="?{% url_replace 'page' leases.next_page_number %}"{% endif %}>
+							<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		{% endif %}
+		</div>
+	</div>
+	
+{% endblock %}
+
+{% block scripts %}
+	<script>
+		$(function(){
+		    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
+				  $('.selectpicker').selectpicker('mobile');
+				}
+		});
+	</script>
+{% block aditional_scripts %}
+{% endblock %}
+
+{% endblock %}

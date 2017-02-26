@@ -20,7 +20,7 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += [
     'transport',
-    'equipment_leasing',
+    'equipment_rental',
 ]
 
 MIDDLEWARE = [
@@ -65,14 +65,14 @@ DATABASES = {
 }
 
 # debug-toolbar
-# INTERNAL_IPS = ['127.0.0.1']
-#
-# INSTALLED_APPS += [
-#     'debug_toolbar',
-# ]
-# MIDDLEWARE += [
-#     'debug_toolbar.middleware.DebugToolbarMiddleware',
-# ]
+INTERNAL_IPS = ['127.0.0.1']
+
+INSTALLED_APPS += [
+    'debug_toolbar',
+]
+MIDDLEWARE += [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
 
 LANGUAGE_CODE = 'es-cl'
 

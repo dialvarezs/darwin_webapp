@@ -1,0 +1,202 @@
+{% load equipmentrental_extras %}
+<!-- Modal -->
+<div id="leaseModal{{ lease.pk }}" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+	<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Realizar Entrega de Préstamo {{ lease.pk }}</h4>
+			</div>
+			<div class="modal-body row">
+				<div class="container col-md-12 col-sm-12">
+				<form id="leaseForm{{ lease.pk }}" action="#" method="post">
+				{% csrf_token %}
+					<div class="form-group">
+						<label for="clientInput">Cliente</label>
+						<input class="form-control" id="clientInput" value="{{ lease.client }}" readonly="readonly">
+					</div>
+					<div class="col-md-6 col-sm-6 col-xs-6 nopadding-left">
+						<div class="form-group">
+							<label for="recordInput">Registro de préstamo</label>
+							<input id="recordInput" class="form-control" name="lease_record" value="{{ lease.lease_record|date:"d/m/Y H:i" }}" readonly="readonly"/>
+						</div>
+					</div>
+					<div class="col-md-6 col-sm-6 col-xs-6 nopadding-right">
+						<div class="form-group">
+							<label for="dateInput">Fecha de devolución indicada</label>
+							<input id="dateInput" class="form-control" name="return_date" value="{{ lease.return_date|date:"d/m/Y" }}" readonly="readonly"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="equipmentTable">Equipamientos</label>
+						<table class="table table-condensed" id="equipmentTable">
+							<thead>
+								<tr>
+									<td class="col-md-2">Cantidad</td>
+									<td class="col-md-8">Descripción</td>
+									<td class="col-md-2">Valor diario</td>
+								</tr>
+							</thead>
+							<tbody>
+								{% for equipment in lease.leaseequipments_set.all %}
+									<tr>
+										<td>{{ equipment.quantity }}</td>
+										<td>{{ equipment.equipment }}</td>
+										<td class="text-right">{{ equipment.unit_price }}</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					<div class="col-md-6 col-sm-6 col-xs-6 nopadding-left">
+						<div class="form-group">
+							<label for="priceGroup">Total Préstamo</label>
+							<div class="input-group" id="priceGroup">
+								<span class="input-group-addon"><span class="glyphicon glyphicon-usd"></span></span>
+								<input class="form-control text-right" name="total_price" value="{{ lease.total_cost }}" readonly="readonly"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-sm-6 col-xs-6 nopadding-right">
+						<div class="form-group">
+							<label for="oldpaymentGroup">Valor Pagado</label>
+							<div class="input-group" id="oldpaymentGroup">
+								<span class="input-group-addon"><span class="glyphicon glyphicon-usd"></span></span>
+								<input class="form-control text-right" name="old_payment" value="{{ lease.payment }}" readonly="readonly"/>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="notesText">Notas</label>
+						<textarea class="form-control" id="notesText" name="notes" maxlength="256">{{ lease.notes }}</textarea>
+					</div>
+					<div class="form-group">
+						<label for="surcharges_list">Recargos</label>
+						<div id="surcharges_list">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="col-md-3 col-sm-3 col-xs-3 nopadding">Equipamiento</div>
+									<div class="col-md-2 col-sm-2 col-xs-2 nopadding">Descontar</div>
+									<div class="col-md-5 col-sm-5 col-xs-5 nopadding">Descripción</div>
+									<div class="col-md-2 col-sm-2 col-xs-2 nopadding">Recargo</div>
+									<hr class="tablerule">
+								</div>
+							</div>
+							<div class="row hidden" id="surcharge_row">
+								<div class="col-md-12">
+									<div class="col-md-3 col-sm-3 col-xs-3 nopadding">
+										<select class="form-control" name="surcharge_equipments[]" id="equipmentSelect">
+											<option value=0>-----</option>
+											{% for leasedequipment in lease.leaseequipments_set.all %}
+												<option value={{ leasedequipment.pk }}>{{ leasedequipment.equipment }}</option>
+											{% endfor %}
+										</select>
+									</div>
+									<div class="col-md-2 col-sm-2 col-xs-2 nopadding">
+										<div class="input-group">
+											<span class="input-group-addon">
+												<input type="checkbox" id="discountCheckbox" name="discount_checks[]" onclick="return false;">
+											</span>
+											<input class="form-control" type="number" min="0" id="discountNumber" name="discount_numbers[]" readonly="readonly">
+										</div>
+									</div>
+									<div class="col-md-4 col-sm-4 col-xs-4 nopadding">
+										<input class="form-control" name="surcharge_descriptions[]">
+									</div>
+									<div class="col-md-2 col-sm-2 col-xs-2 nopadding">
+										<input type="number" min="0" class="form-control" id="surchargeValue" name="surcharge_values[]">
+									</div>
+									<div class="col-md-1 col-sm-1 col-xs-1 nopadding">
+										<span class="glyphicon glyphicon-remove removeicon del_surcharge"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<span class="glyphicon glyphicon-plus addicon" id="add_surcharge"></span>
+					</div>
+
+					<div class="form-group">
+						<label for="surchargeGroup">Recargo Total</label>
+						<div class="input-group" id="surchargeGroup">
+							<span class="input-group-addon"><span class="glyphicon glyphicon-usd"></span></span>
+							<input type="number" class="form-control text-right" id="total_surcharge" name="surcharge" value="0" readonly="readonly"/>
+							<div class="input-group-btn">
+								<span id="get_total_surcharge" class="btn btn-default">Calcular</span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="newpaymentGroup">Pago adicional</label>
+						<div class="input-group" id="newpaymentGroup">
+							<span class="input-group-addon"><span class="glyphicon glyphicon-usd"></span></span>
+							<input class="form-control" type="number" id="paymentInput" name="new_payment" required/>
+						</div>
+					</div>
+				</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="submit" class="btn btn-primary" value="submit" id="leaseForm{{ lease.pk }}Submit"><i class="glyphicon glyphicon-save"></i> Entregar Préstamo</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> Cancelar</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% block aditional_scripts %}
+	<script>
+		$(function () {
+	    $(document).on('change', '#equipmentSelect', function () {
+        if($(this).find(":selected").val() == 0) {
+					$(this).parent().siblings().find('#discountCheckbox').attr('onclick', 'return false;');
+		    }
+		    else {
+	        $(this).parent().siblings().find('#discountCheckbox').attr('onclick', '');
+		    }
+      });
+	    $(document).on('change', '#discountCheckbox', function () {
+		    if($(this).is(':checked')) {
+		        $(this).parent().parent().find('#discountNumber').removeAttr('readonly');
+		    }
+		    else {
+	        var number = $(this).parent().parent().find('#discountNumber');
+			    number.attr('readonly', 'readonly');
+	        number.val("");
+		    }
+      });
+			$(document).on('click', '.del_surcharge', function(){
+        $(this).parent().parent().parent().remove();
+			});
+	    $('#leaseForm{{ lease.pk }} #add_surcharge').click(function(){
+        var $newsurch = $('#leaseForm{{ lease.pk }} #surcharge_row.hidden').clone();
+        $newsurch.removeClass('hidden');
+				$('#leaseForm{{ lease.pk }} #surcharges_list').append($newsurch);
+			});
+	    $('#leaseForm{{ lease.pk }} #get_total_surcharge').click(function(){
+        var price = 0;
+	      $.each($('#leaseForm{{ lease.pk }} #surcharges_list > >'), function(index, ediv){
+					var value = $(ediv).find('#surchargeValue').val();
+					if(isNaN(value)) {
+						value = 0;
+          }
+			    price += value*1;
+	      });
+        $('#leaseForm{{ lease.pk }} #total_surcharge').val(price);
+			});
+	    $('#leaseForm{{ lease.pk }}Submit').click(function(event){
+        $("#leaseForm{{ lease.pk }} #surcharge_row.hidden").remove(); //removes the hidden base surcharge row
+		    $('#leaseForm{{ lease.pk }} #get_total_surcharge').click();
+			  event.preventDefault();
+				$.ajax({
+					url: "{% url 'equipment_rental:lease_return' lease.pk %}",
+					type: "POST",
+					data: $('#leaseForm{{ lease.pk }}').serialize(),
+					success: function(data){
+						location.reload();
+					}
+				});
+				$('#leaseModal{{ lease.pk }}').modal('hide');
+			});
+    });
+	</script>
+{% endblock %}
