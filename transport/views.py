@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -8,19 +9,19 @@ from io import BytesIO
 from datetime import datetime
 import json
 
-from .models import Travel, Group, Bus, BusCompany, Driver, Itinerary, Company
+from .models import Travel, Group, Bus, BusCompany, Driver, Stretch, Company
 from .pdf_print import DocumentBuilder
 
 
 @login_required
 def travel_list(request):
-	travels = Travel.objects.all().select_related('group', 'bus', 'bus__company', 'itinerary', 'itinerary__stretch', 'driver')
+	travels = Travel.objects.all().select_related('group', 'bus', 'bus__company', 'stretch', 'driver')
 	groups = Group.objects.filter(is_enabled=True)
 	busses = Bus.objects.filter(is_available=True).select_related('company')
 	companies = Company.objects.filter(is_available=True)
 	buscompanies = BusCompany.objects.all()
 	drivers = Driver.objects.filter(is_available=True)
-	itineraries = Itinerary.objects.filter(is_enabled=True).select_related('stretch')
+	stretchs = Stretch.objects.filter(is_enabled=True)
 	current_group = None
 	filters = []
 
@@ -38,7 +39,7 @@ def travel_list(request):
 		filters.append("Empresa (Buses): " + BusCompany.objects.get(pk=request.GET['buscompany']).__str__())
 
 	if 'driver' in request.GET and request.GET['driver'] != '0':
-		travels = travels.filter(driver=request.GET['driver'])
+		travels = travels.filter(Q(driver=request.GET['driver']) | Q(additional_driver=request.GET['driver']))
 		filters.append("Chofer: " + Driver.objects.get(pk=request.GET['driver']).__str__())
 
 	date_from = (request.GET['date_from'] if 'date_from' in request.GET else None)
@@ -59,7 +60,7 @@ def travel_list(request):
 	travels = __pagination(travels, 20, request.GET.get('page'))
 
 	context = {'logo': 'resources/img/logo-darwin-mini.png', 'travels': travels, 'groups': groups, 'busses': busses, 'buscompanies': buscompanies,
-		'drivers': drivers, 'itineraries': itineraries, 'companies': companies, 'current_group': current_group, 'filters': filters}
+		'drivers': drivers, 'stretchs': stretchs, 'companies': companies, 'current_group': current_group, 'filters': filters}
 	return render(request, 'transport/list.html', context)
 
 
@@ -75,7 +76,13 @@ def travel_save(request, travel_id=None):
 			driver = Driver.objects.get(pk=request.POST['driver'])
 		else:
 			driver = None
-		itinerary = Itinerary.objects.get(pk=request.POST['itinerary'])
+		if request.POST['additional_driver'] != '0':
+			additional_driver = Driver.objects.get(pk=request.POST['additional_driver'])
+		else:
+			additional_driver = None
+		stretch = Stretch.objects.get(pk=request.POST['stretch'])
+		app_people = request.POST['app_people']
+		guides = request.POST['guides']
 		date_field = request.POST['date']
 		time_field = request.POST['time']
 		notes = request.POST['notes']
@@ -89,7 +96,10 @@ def travel_save(request, travel_id=None):
 		t.group = group
 		t.bus = bus
 		t.driver = driver
-		t.itinerary = itinerary
+		t.additional_driver = additional_driver
+		t.stretch = stretch
+		t.app_people = app_people
+		t.guides = guides
 		t.date = date_field
 		t.time = time_field if time_field != '' else None
 		t.notes = notes
@@ -155,7 +165,7 @@ def travel_pdf(request):
 		info_raw += ("Empresa (Transportes): TODAS",)
 
 	if 'driver' in request.GET and request.GET['driver'] != '0':
-		travels = travels.filter(driver=request.GET['driver'])
+		travels = travels.filter(Q(driver=request.GET['driver']) | Q(additional_driver=request.GET['driver']))
 		info_raw += ("Conductor:" + Driver.objects.get(pk=request.GET['driver']).__str__(),)
 	else:
 		info_raw += ("Conductor: TODOS",)

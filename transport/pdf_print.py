@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Image, Table, TableStyle, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfgen import canvas
@@ -5,7 +7,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib.units import cm
 
-from datetime import datetime
+from  django.conf import settings
 
 
 # http://code.activestate.com/recipes/576832/
@@ -35,6 +37,8 @@ class NumberedCanvas(canvas.Canvas):
 class DocumentBuilder:
 
 	def __init__(self, buffer):
+		self._static_base_path = settings.STATIC_ROOT
+		self._static_base_path = "static/"  # delete in production!
 		self._page_h = letter[0]
 		self._page_w = letter[1]
 		self._styles = getSampleStyleSheet()
@@ -49,6 +53,7 @@ class DocumentBuilder:
 	def _header(self, canvas, doc):
 		canvas.saveState()
 		canvas.setFont(self._font, 8)
+		canvas.setTitle(self._title)
 
 		header = Paragraph(self._company+'<br/>'+self._title+'<br/>'+datetime.now().strftime("%d/%m/%Y %H:%M:%S"), self._styles['Normal'])
 		w, h = header.wrap(doc.width, doc.topMargin)
@@ -68,31 +73,33 @@ class DocumentBuilder:
 	def travel_list(self, info, travels):
 		self._company = "Transportes Darwin"
 		self._title = "Listado de Viajes"
-		self._logo_path = "static/resources/img/logo-darwin-mini.png"
+		self._logo_path = self._static_base_path + "resources/img/logo-darwin-mini.png"
 
-		table_style = [('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-						('FONTSIZE', (0, 0), (-1, -1), 9),
-						('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),
-						('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
-						('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-						('ALIGN', (0, 1), (1, -1), 'RIGHT'),
-						('ALIGN', (1, 1), (4, -1), 'CENTER'),
-						('ALIGN', (-2, 1), (-1, -1), 'RIGHT'),
-						('VALIGN', (0, 0), (-1, -1), 'TOP'),]
+		table_style = [('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # bold header
+						('FONTSIZE', (0, 0), (-1, -1), 9),  # all table font size
+						('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),  # header line (above)
+						('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),  # header line (below)
+						('ALIGN', (0, 0), (-1, 0), 'CENTER'),  # centered header
+						('ALIGN', (0, 1), (1, -1), 'RIGHT'),  # 1st col right-align
+						('ALIGN', (1, 1), (4, -1), 'CENTER'),  # 2nd-4th col centered
+						('ALIGN', (-2, 1), (-1, -1), 'RIGHT'),  # date/time cols right aligned
+						('VALIGN', (0, 0), (-1, -1), 'TOP')]  # all table top aligned
 
 		i = 0
-		data = [('Viaje', 'Grupo', 'Bus', 'Empresa', 'Conductor', 'Itinerario', 'Fecha', 'Hora', 'Notas')]
+		data = [('Viaje', 'Grupo', 'Bus', 'Empresa', 'Conductor', 'Tramo', 'PAX', 'Fecha', 'Hora', 'Notas')]
 		for travel in travels:
 			row = (str(travel.pk).zfill(4), Paragraph(travel.group.__str__(), self._styles["BodyText"]))
 			if travel.bus:
-				row += (travel.bus.plate, Paragraph(travel.bus.company.__str__(), self._styles["BodyText"]))
+				row += ("{} [{}]".format(travel.bus.plate if travel.bus.plate else "-----", travel.bus.capacity),
+						Paragraph(travel.bus.company.__str__(), self._styles["BodyText"]))
 			else:
 				row += ("-----", "-----")
 			if travel.driver:
 				row += (Paragraph(travel.driver.__str__(), self._styles["BodyText"]),)
 			else:
 				row += ("-----",)
-			row += (Paragraph(travel.itinerary.__str__(), self._styles["BodyText"]),)
+			row += (Paragraph(travel.stretch.__str__(), self._styles["BodyText"]),)
+			row += ("{} + {}".format(travel.app_people, travel.guides),)
 			row += (travel.date.strftime("%d/%m/%Y"),)
 			if i > 0 and (travels[i].date != travels[i-1].date):
 				table_style += ('LINEBELOW', (0, i), (-1, i), 0.5, colors.black),
@@ -106,9 +113,9 @@ class DocumentBuilder:
 			i += 1
 
 		info_table = Table(info)
-		info_table.setStyle(TableStyle([('FONTNAME', (0,0), (-1,-1), 'Helvetica-Bold')]))
+		info_table.setStyle(TableStyle([('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold')]))
 
-		data_table = Table(data, colWidths=(None, 3*cm, None, None, None, 5*cm, None, 1*cm, 6*cm), repeatRows=1)
+		data_table = Table(data, colWidths=(None, 3*cm, None, None, None, 5*cm, None, None, 1*cm, 6*cm), repeatRows=1)
 		data_table.setStyle(TableStyle(table_style))
 
 		space = Spacer(width=0, height=cm)

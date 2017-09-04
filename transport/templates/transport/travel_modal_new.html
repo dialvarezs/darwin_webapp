@@ -28,24 +28,41 @@
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="selectDriver">Conductor</label>
-						<select class="form-control selectpicker" id="selectDriver" name="driver" data-size="15" data-live-search="true">
-							<option value=0>-----</option>
-							{% for driver in drivers %}
-							<option value={{ driver.pk }}>{{ driver }}</option>
+						<label for="selectDriver">Conductores</label>
+						<div class='input-group' id="paxguidesNumber">
+							<select class="form-control selectpicker" id="selectDriver" name="driver" data-size="15" data-live-search="true">
+								<option value=0>-----</option>
+								{% for driver in drivers %}
+								<option value={{ driver.pk }}>{{ driver }}</option>
+								{% endfor %}
+							</select>
+							<span class="input-group-addon">/</span>
+							<select class="form-control selectpicker" id="selectAdditionalDriver" name="additional_driver" data-size="15" data-live-search="true">
+								<option value=0>-----</option>
+								{% for driver in drivers %}
+								<option value={{ driver.pk }}>{{ driver }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="selectStretch">Tramo</label>
+						<select class="form-control selectpicker" id="selectStretch" name="stretch" data-size="15" data-live-search="true">
+							{% for stretch in stretchs %}
+							<option value={{ stretch.pk }}>{{ stretch }}</option>
 							{% endfor %}
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="selectItinerary">Itinerario</label>
-						<select class="form-control selectpicker" id="selectItinerary" name="itinerary" data-size="15" data-live-search="true">
-							{% for itinerary in itineraries %}
-							<option value={{ itinerary.pk }}>{{ itinerary }}</option>
-							{% endfor %}
-						</select>
+						<label for="paxguidesNumber">PAX + Guías</label>
+						<div class='input-group' id="paxguidesNumber">
+							<input type="number" class="form-control" id="paxInput" name="app_people">
+							<span class="input-group-addon">+</span>
+							<input type="number" class="form-control" id="guidesInput" name="guides">
+						</div>
 					</div>
 					<div class="form-group">
-						<label for="datetimePicker">Fecha/Hora</label>
+						<label for="datetimePicker">Fecha / Hora</label>
 						<div class='input-group' id="datetimePicker">
 							<span class="input-group-addon">
 								<span class="glyphicon glyphicon-calendar"></span>

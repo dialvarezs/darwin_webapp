@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import Bus, BusCompany, Driver, Destination, Stretch, StretchDestinations, Itinerary, Company, Group, Travel, IDType, Passenger
+from .models import Bus, BusCompany, Driver, Destination, Stretch, StretchDestinations, Company, Group, Travel, IDType, Passenger
 from . import validators
 from . import utils
 
@@ -81,22 +81,6 @@ class StretchAdmin(admin.ModelAdmin):
 	make_disabled.short_description = "Deshabilitar tramos seleccionados"
 
 
-class ItineraryAdmin(admin.ModelAdmin):
-	list_display = ['__str__', 'is_enabled']
-	list_filter = ['stretch', 'is_enabled']
-	search_fields = ['stretch__description']
-	actions = ['make_disabled']
-
-	def formfield_for_foreignkey(self, db_field, request, **kwargs):
-		if db_field.name == 'stretch':
-			kwargs['queryset'] = Stretch.objects.filter(is_enabled=True)
-		return super(ItineraryAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
-	def make_disabled(self, request, queryset):
-		queryset.update(is_enabled=False)
-	make_disabled.short_description = "Deshabilitar itinerarios seleccionados"
-
-
 class MyCompanyAdminForm(forms.ModelForm):
 
 	def clean_id_string(self):
@@ -139,8 +123,8 @@ class GroupAdmin(admin.ModelAdmin):
 
 
 class TravelAdmin(admin.ModelAdmin):
-	list_display = ['__str__', 'group', 'bus', 'driver', 'itinerary', 'date', 'time']
-	list_filter = ['group', 'driver', 'itinerary__stretch', 'date']
+	list_display = ['__str__', 'group', 'bus', 'driver', 'stretch', 'date', 'time']
+	list_filter = ['group', 'driver', 'stretch', 'date']
 
 	def formfield_for_dbfield(self, db_field, **kwargs):
 		formfield = super(TravelAdmin, self).formfield_for_dbfield(db_field, **kwargs)
@@ -153,8 +137,8 @@ class TravelAdmin(admin.ModelAdmin):
 			kwargs['queryset'] = Bus.objects.filter(is_available=True)
 		if db_field.name == 'driver':
 			kwargs['queryset'] = Driver.objects.filter(is_available=True)
-		if db_field.name == 'itinerary':
-			kwargs['queryset'] = Itinerary.objects.filter(is_enabled=True)
+		if db_field.name == 'stretch':
+			kwargs['queryset'] = Stretch.objects.filter(is_enabled=True)
 		if db_field.name == 'group':
 			kwargs['queryset'] = Group.objects.filter(is_enabled=True)
 		return super(TravelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
@@ -175,7 +159,6 @@ admin.site.register(Bus, BusAdmin)
 admin.site.register(Driver, DriverAdmin)
 admin.site.register(Destination, DestinationAdmin)
 admin.site.register(Stretch, StretchAdmin)
-admin.site.register(Itinerary, ItineraryAdmin)
 admin.site.register(Company, CompanyAdmin)
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Travel, TravelAdmin)

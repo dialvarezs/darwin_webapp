@@ -96,21 +96,6 @@ class StretchDestinations(models.Model):
 		ordering = ['position']
 
 
-class Itinerary(models.Model):
-	stretch = models.ForeignKey(Stretch, on_delete=models.PROTECT, verbose_name='tramo')
-	app_people = models.IntegerField(verbose_name='PAX')
-	guides = models.IntegerField(verbose_name='guías')
-	is_enabled = models.BooleanField(default=True, verbose_name='habilitado')
-
-	def __str__(self):
-		return "{} ({}+{})".format(self.stretch, self.app_people, self.guides)
-
-	class Meta:
-		verbose_name = 'itinerario'
-		verbose_name_plural = 'itinerarios'
-		ordering = ['stretch', 'app_people', 'guides']
-
-
 class Company(models.Model):
 	name = models.CharField(max_length=64, verbose_name='nombre')
 	short_name = models.CharField(max_length=8, verbose_name='nombre corto')
@@ -182,7 +167,11 @@ class Travel(models.Model):
 	group = models.ForeignKey(Group, on_delete=models.PROTECT, verbose_name='grupo')
 	bus = models.ForeignKey(Bus, on_delete=models.PROTECT, blank=True, null=True, verbose_name='bus')
 	driver = models.ForeignKey(Driver, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='chofer')
-	itinerary = models.ForeignKey(Itinerary, on_delete=models.PROTECT, verbose_name='itinerario')
+	additional_driver = models.ForeignKey(Driver, on_delete=models.SET_NULL, related_name='%(app_label)s_aditional_%(class)s_related',
+		blank=True, null=True, verbose_name='chofer adicional')
+	stretch = models.ForeignKey(Stretch, on_delete=models.PROTECT, blank=True, null=True, verbose_name='tramo')
+	app_people = models.IntegerField(default=0, verbose_name='PAX')
+	guides = models.IntegerField(default=0, verbose_name='guías')
 	date = models.DateField(verbose_name='fecha')
 	time = models.TimeField(blank=True, null=True, verbose_name='hora')
 	notes = models.CharField(max_length=128, blank=True, verbose_name='notas')

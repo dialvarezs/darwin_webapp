@@ -146,7 +146,7 @@
 							<th>Viaje</th>
 							<th>Grupo</th>
 							<th>Bus</th>
-							<th>Chofer</th>
+							<th>Chofer(es)</th>
 							<th>Empresa</th>
 							<th>Tramo</th>
 							<th>PAX</th>
@@ -170,13 +170,16 @@
 							<td>
 								{% if travel.driver %}
 									<a href="{% url 'transport:index' %}?driver={{ travel.driver.pk }}&date_from={% now "Y-m-d" %}">{{ travel.driver }}</a>
+										{% if travel.additional_driver %}
+											/<br> <a href="{% url 'transport:index' %}?driver={{ travel.additional_driver.pk }}&date_from={% now "Y-m-d" %}">{{ travel.additional_driver }}</a>
+										{% endif %}
 								{% else %}-----{% endif %}
 							</td>
 							<td>{% if travel.bus %}<a href="{% url 'transport:index' %}?buscompany={{ travel.bus.company.pk }}&date_from={% now "Y-m-d" %}">{{ travel.bus.company }}</a>
 								{% else %}-----{% endif %}
 							</td>
-							<td>{{ travel.itinerary.stretch }}</td>
-							<td>{{ travel.itinerary.app_people }}+{{travel.itinerary.guides}}</td>
+							<td>{{ travel.stretch }}</td>
+							<td>{{ travel.app_people }}+{{travel.guides}}</td>
 							<td>{{ travel.date }}</td>
 							<td>{% if travel.time %}{{ travel.time }}{% else %}--:--{% endif %}</td>
 							<td>{% if travel.notes %}<span class="glyphicon glyphicon glyphicon-info-sign"></span>{% endif %}</td>

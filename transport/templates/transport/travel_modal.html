@@ -10,7 +10,7 @@
 			<div class="modal-body">
 				<form id="travelForm{{ travel.pk }}" action="{% url 'transport:travel_save' travel.pk %}" method="post">
 				{% csrf_token %}
-					<div class="form group">
+					<div class="form-group">
 						<label for="selectGroup">Grupo</label>
 						<select class="form-control" id="selectGroup" name="group">
 							{% for group in groups %}
@@ -18,7 +18,7 @@
 							{% endfor %}
 						</select>
 					</div>
-					<div class="form group">
+					<div class="form-group">
 						<label for="selectBus">Bus</label>
 						<select class="form-control" id="selectBus" name="bus">
 							<option value=0 {% if not travel.bus %}selected{% endif %}>-----</option>
@@ -27,24 +27,41 @@
 							{% endfor %}
 						</select>
 					</div>
-					<div class="form group">
-						<label for="selectDriver">Conductor</label>
-						<select class="form-control" id="selectDriver" name="driver">
-							<option value=0 {% if not travel.driver %}selected{% endif %}>-----</option>
-							{% for driver in drivers %}
-							<option value={{ driver.pk }} {% if travel.driver == driver %}selected{% endif %}>{{ driver }}</option>
+					<div class="form-group">
+						<label for="selectDriver">Conductores</label>
+						<div class='input-group' id="paxguidesNumber">
+							<select class="form-control selectpicker" id="selectDriver" name="driver">
+								<option value=0>-----</option>
+								{% for driver in drivers %}
+								<option value={{ driver.pk }} {% if travel.driver == driver %}selected{% endif %}>{{ driver }}</option>
+								{% endfor %}
+							</select>
+							<span class="input-group-addon">/</span>
+							<select class="form-control selectpicker" id="selectAdditionalDriver" name="additional_driver">
+								<option value=0>-----</option>
+								{% for driver in drivers %}
+								<option value={{ driver.pk }} {% if travel.additional_driver == driver %}selected{% endif %}>{{ driver }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="selectStretch">Tramo</label>
+						<select class="form-control selectpicker" id="selectStretch" name="stretch">
+							{% for stretch in stretchs %}
+							<option value={{ stretch.pk }} {% if travel.stretch == stretch %}selected{% endif %}>{{ stretch }}</option>
 							{% endfor %}
 						</select>
 					</div>
-					<div class="form group">
-						<label for="selectItinerary">Itinerario</label>
-						<select class="form-control" id="selectItinerary" name="itinerary">
-							{% for itinerary in itineraries %}
-							<option value={{ itinerary.pk }} {% if travel.itinerary == itinerary %}selected{% endif %}>{{ itinerary }}</option>
-							{% endfor %}
-						</select>
+					<div class="form-group">
+						<label for="paxguidesNumber">PAX + Guías</label>
+						<div class='input-group' id="paxguidesNumber">
+							<input type="number" class="form-control" id="paxInput" name="app_people" value="{{ travel.app_people }}">
+							<span class="input-group-addon">+</span>
+							<input type="number" class="form-control" id="guidesInput" name="guides" value="{{ travel.guides }}">
+						</div>
 					</div>
-					<div class="form group">
+					<div class="form-group">
 						<label for="datetimePicker">Fecha/Hora</label>
 						<div class='input-group' id="datetimePicker">
 							<span class="input-group-addon">
