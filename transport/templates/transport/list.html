@@ -143,9 +143,9 @@
 				<div class="table-responsive">
 					<table class="table">
 						<tr>
-							<th>Viaje</th>
+							{# <th>Viaje</th> #}
 							<th>Grupo</th>
-							<th>Bus</th>
+							{# <th>Bus</th> #}
 							<th>Chofer(es)</th>
 							<th>Empresa</th>
 							<th>Tramo</th>
@@ -157,7 +157,7 @@
 						</tr>
 						{% for travel in travels %}
 						<tr {% ifchanged travel.date %}class="doubleline"{% endifchanged %}>
-							<td>{{ travel.pk|stringformat:"05d" }}</td>
+							{# <td>{{ travel.pk|stringformat:"05d" }}</td> #}
 							<td>
 								<a href="{% url 'transport:index' %}?group={{ travel.group.pk }}&date_from={% now "Y-m-d" %}">{{ travel.group }}</a>
 								{% if travel.group.debt|add:0 > 0 %}
@@ -166,7 +166,7 @@
 									<span class="glyphicon glyphicon-credit-card" style="color: green"></span>
 								{% endif %}
 							</td>
-							<td>{% if travel.bus %}{{ travel.bus }}{% else %}-----{% endif %}</td>
+							{# <td>{% if travel.bus %}{{ travel.bus }}{% else %}-----{% endif %}</td> #}
 							<td>
 								{% if travel.driver %}
 									<a href="{% url 'transport:index' %}?driver={{ travel.driver.pk }}&date_from={% now "Y-m-d" %}">{{ travel.driver }}</a>
@@ -178,7 +178,7 @@
 							<td>{% if travel.bus %}<a href="{% url 'transport:index' %}?buscompany={{ travel.bus.company.pk }}&date_from={% now "Y-m-d" %}">{{ travel.bus.company }}</a>
 								{% else %}-----{% endif %}
 							</td>
-							<td>{{ travel.stretch }}</td>
+							<td style="font-weight: bold; font-size: 11.5pt">{{ travel.stretch }}</td>
 							<td>{{ travel.app_people }}+{{travel.guides}}</td>
 							<td>{{ travel.date }}</td>
 							<td>{% if travel.time %}{{ travel.time }}{% else %}--:--{% endif %}</td>

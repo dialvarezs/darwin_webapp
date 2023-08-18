@@ -1,7 +1,7 @@
 <!-- Modal -->
 <div id="travelModal0" class="modal fade" role="dialog">
 	<div class="modal-dialog">
-	<!-- Modal content-->
+		<!-- Modal content-->
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -9,10 +9,11 @@
 			</div>
 			<div class="modal-body">
 				<form id="travelForm0" action="{% url 'transport:travel_new' %}" method="post">
-				{% csrf_token %}
+					{% csrf_token %}
 					<div class="form-group">
-						<label for="selectGroup">Grupo</label>
-						<select class="form-control selectpicker" id="selectGroup" name="group" data-size="15" data-live-search="true">
+						<label for="selectGroupNew">Grupo</label>
+						<select class="form-control selectpicker" id="selectGroupNew" name="group" data-size="15"
+							data-live-search="true">
 							{% for group in groups %}
 							<option value={{ group.pk }}>{{ group }}</option>
 							{% endfor %}
@@ -20,7 +21,8 @@
 					</div>
 					<div class="form-group">
 						<label for="selectBus">Bus</label>
-						<select class="form-control selectpicker" id="selectBus" name="bus" data-size="15" data-live-search="true">
+						<select class="form-control selectpicker" id="selectBus" name="bus" data-size="15"
+							data-live-search="true">
 							<option value=0>-----</option>
 							{% for bus in busses %}
 							<option value={{ bus.pk }}>{{ bus }} ({{ bus.company }})</option>
@@ -28,16 +30,18 @@
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="selectDriver">Conductores</label>
+						<label for="selectDriverNew">Conductores</label>
 						<div class='input-group' id="paxguidesNumber">
-							<select class="form-control selectpicker" id="selectDriver" name="driver" data-size="15" data-live-search="true">
+							<select class="form-control selectpicker" id="selectDriverNew" name="driver" data-size="15"
+								data-live-search="true">
 								<option value=0>-----</option>
 								{% for driver in drivers %}
 								<option value={{ driver.pk }}>{{ driver }}</option>
 								{% endfor %}
 							</select>
 							<span class="input-group-addon">/</span>
-							<select class="form-control selectpicker" id="selectAdditionalDriver" name="additional_driver" data-size="15" data-live-search="true">
+							<select class="form-control selectpicker" id="selectAdditionalDriver"
+								name="additional_driver" data-size="15" data-live-search="true">
 								<option value=0>-----</option>
 								{% for driver in drivers %}
 								<option value={{ driver.pk }}>{{ driver }}</option>
@@ -47,7 +51,8 @@
 					</div>
 					<div class="form-group">
 						<label for="selectStretch">Tramo</label>
-						<select class="form-control selectpicker" id="selectStretch" name="stretch" data-size="15" data-live-search="true">
+						<select class="form-control selectpicker" id="selectStretch" name="stretch" data-size="15"
+							data-live-search="true">
 							{% for stretch in stretchs %}
 							<option value={{ stretch.pk }}>{{ stretch }}</option>
 							{% endfor %}
@@ -67,11 +72,11 @@
 							<span class="input-group-addon">
 								<span class="glyphicon glyphicon-calendar"></span>
 							</span>
-							<input type='date' class="form-control" name="date" value="" placeholder="dd/mm/aaaa"/>
+							<input type='date' class="form-control" name="date" value="" placeholder="dd/mm/aaaa" />
 							<span class="input-group-addon">
 								<span class="glyphicon glyphicon-time"></span>
 							</span>
-							<input type='time' class="form-control" name="time" value="" placeholder="hh:mm"/>
+							<input type='time' class="form-control" name="time" value="" placeholder="hh:mm" />
 						</div>
 					</div>
 					<div class="form-group">
@@ -81,8 +86,10 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				<button type="submit" class="btn btn-primary" value="submit" id="travelForm0Submit"><i class="glyphicon glyphicon-save"></i> Registrar Viaje</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> Cancelar</button>
+				<button type="submit" class="btn btn-primary" value="submit" id="travelForm0Submit"><i
+						class="glyphicon glyphicon-save"></i> Registrar Viaje</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><i
+						class="glyphicon glyphicon-remove"></i> Cancelar</button>
 			</div>
 		</div>
 	</div>

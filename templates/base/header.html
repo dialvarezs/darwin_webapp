@@ -13,7 +13,7 @@
 		<div id="header-navbar-collapse" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
 				<li class="{% if '/transport/' in request.path %}active{% endif %}"><a href="{% url 'transport:index' %}">Darwin</a></li>
-				<li class="{% if '/equipment_rental/' in request.path %}active{% endif %}"><a href="{% url 'equipment_rental:index' %}">Camaleón</a></li>
+				<li class="{% if '/equipment_rental/' in request.path %}active{% endif %}"><a href="#">Camaleón</a></li>
 				<li class="{% if '/admin/' in request.path %}active{% endif %}"><a href="{% url 'admin:index' %}">Administración</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">

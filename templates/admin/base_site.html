@@ -13,7 +13,7 @@
 	<span class="navbar-brand">Victor Alarcón</span>
 	<ul class="nav navbar-nav">
 		<li><a href="{% url 'transport:index' %}">Darwin</a></li>
-		<li><a href="{% url 'equipment_rental:index' %}">Camaleón</a></li>
+		<li><a href="#">Camaleón</a></li>
 		<li class="{% if '/admin/' in request.path %}active{% endif %}"><a href="{% url 'admin:index' %}">Administración</a></li>
 	</ul>
 {% endblock %}

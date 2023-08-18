@@ -1,7 +1,7 @@
 <!-- Modal -->
 <div id="travelModal{{ travel.pk }}" class="modal fade" role="dialog">
 	<div class="modal-dialog">
-	<!-- Modal content-->
+		<!-- Modal content-->
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -9,56 +9,64 @@
 			</div>
 			<div class="modal-body">
 				<form id="travelForm{{ travel.pk }}" action="{% url 'transport:travel_save' travel.pk %}" method="post">
-				{% csrf_token %}
+					{% csrf_token %}
 					<div class="form-group">
-						<label for="selectGroup">Grupo</label>
-						<select class="form-control" id="selectGroup" name="group">
+						<label for="selectGroup{{ travel.pk }}">Grupo</label>
+						<select class="form-control" id="selectGroup{{ travel.pk }}" name="group">
 							{% for group in groups %}
-							<option value={{ group.pk }} {% if travel.group == group %}selected{% endif %}>{{ group }}</option>
+							<option value={{ group.pk }} {% if travel.group == group %}selected{% endif %}>{{ group }}
+							</option>
 							{% endfor %}
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="selectBus">Bus</label>
-						<select class="form-control" id="selectBus" name="bus">
+						<label for="selectBus{{ travel.pk }}">Bus</label>
+						<select class="form-control" id="selectBus{{ travel.pk }}" name="bus">
 							<option value=0 {% if not travel.bus %}selected{% endif %}>-----</option>
 							{% for bus in busses %}
-							<option value={{ bus.pk }} {% if travel.bus == bus %}selected{% endif %}>{{ bus }} ({{bus.company}})</option>
+							<option value={{ bus.pk }} {% if travel.bus == bus %}selected{% endif %}>{{ bus }}
+								({{bus.company}})</option>
 							{% endfor %}
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="selectDriver">Conductores</label>
+						<label for="selectDriver{{ travel.pk }}">Conductores</label>
 						<div class='input-group' id="paxguidesNumber">
-							<select class="form-control selectpicker" id="selectDriver" name="driver">
+							<select class="form-control selectpicker" id="selectDriver{{ travel.pk }}" name="driver">
 								<option value=0>-----</option>
 								{% for driver in drivers %}
-								<option value={{ driver.pk }} {% if travel.driver == driver %}selected{% endif %}>{{ driver }}</option>
+								<option value={{ driver.pk }} {% if travel.driver == driver %}selected{% endif %}>
+									{{ driver }}</option>
 								{% endfor %}
 							</select>
 							<span class="input-group-addon">/</span>
-							<select class="form-control selectpicker" id="selectAdditionalDriver" name="additional_driver">
+							<select class="form-control selectpicker" id="selectAdditionalDriver{{ travel.pk }}"
+								name="additional_driver">
 								<option value=0>-----</option>
 								{% for driver in drivers %}
-								<option value={{ driver.pk }} {% if travel.additional_driver == driver %}selected{% endif %}>{{ driver }}</option>
+								<option value={{ driver.pk }}
+									{% if travel.additional_driver == driver %}selected{% endif %}>{{ driver }}</option>
 								{% endfor %}
 							</select>
 						</div>
 					</div>
 					<div class="form-group">
-						<label for="selectStretch">Tramo</label>
-						<select class="form-control selectpicker" id="selectStretch" name="stretch">
+						<label for="selectStretch{{ travel.pk }}">Tramo</label>
+						<select class="form-control selectpicker" id="selectStretch{{ travel.pk }}" name="stretch">
 							{% for stretch in stretchs %}
-							<option value={{ stretch.pk }} {% if travel.stretch == stretch %}selected{% endif %}>{{ stretch }}</option>
+							<option value={{ stretch.pk }} {% if travel.stretch == stretch %}selected{% endif %}>
+								{{ stretch }}</option>
 							{% endfor %}
 						</select>
 					</div>
 					<div class="form-group">
 						<label for="paxguidesNumber">PAX + Guías</label>
 						<div class='input-group' id="paxguidesNumber">
-							<input type="number" class="form-control" id="paxInput" name="app_people" value="{{ travel.app_people }}">
+							<input type="number" class="form-control" id="paxInput{{ travel.pk }}" name="app_people"
+								value="{{ travel.app_people }}">
 							<span class="input-group-addon">+</span>
-							<input type="number" class="form-control" id="guidesInput" name="guides" value="{{ travel.guides }}">
+							<input type="number" class="form-control" id="guidesInput{{ travel.pk }}" name="guides"
+								value="{{ travel.guides }}">
 						</div>
 					</div>
 					<div class="form-group">
@@ -67,22 +75,27 @@
 							<span class="input-group-addon">
 								<span class="glyphicon glyphicon-calendar"></span>
 							</span>
-							<input type='date' class="form-control" name="date" value="{{ travel.date|date:"Y-m-d" }}" placeholder="dd/mm/aaaa"/>
+							<input type='date' class="form-control" name="date" value="{{ travel.date|date:"Y-m-d" }}"
+								placeholder="dd/mm/aaaa" />
 							<span class="input-group-addon">
 								<span class="glyphicon glyphicon-time"></span>
 							</span>
-							<input type='time' class="form-control" name="time" value="{% if travel.time %}{{ travel.time }}{% endif %}" placeholder="hh:mm"/>
+							<input type='time' class="form-control" name="time"
+								value="{% if travel.time %}{{ travel.time }}{% endif %}" placeholder="hh:mm" />
 						</div>
 					</div>
 					<div class="form group">
-						<label for="areaNotes">Notas</label>
-						<textarea class="form-control" id="areaNotes" name="notes">{{ travel.notes }}</textarea>
+						<label for="areaNotes{{ travel.pk }}">Notas</label>
+						<textarea class="form-control" id="areaNotes{{ travel.pk }}"
+							name="notes">{{ travel.notes }}</textarea>
 					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
-				<button type="submit" class="btn btn-primary" value="submit" id="travelForm{{ travel.pk }}Submit"><i class="glyphicon glyphicon-save"></i> Guardar</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> Cancelar</button>
+				<button type="submit" class="btn btn-primary" value="submit" id="travelForm{{ travel.pk }}Submit"><i
+						class="glyphicon glyphicon-save"></i> Guardar</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><i
+						class="glyphicon glyphicon-remove"></i> Cancelar</button>
 			</div>
 		</div>
 	</div>
